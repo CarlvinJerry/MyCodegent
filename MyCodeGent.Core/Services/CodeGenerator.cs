@@ -246,6 +246,11 @@ public class CodeGenerator : ICodeGenerator
             Console.WriteLine("  ✓ Generated ARCHITECTURE.md");
         }
         
+        // Generate README with setup instructions and missing aspects
+        var readme = ReadmeTemplate.Generate(entities, config);
+        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "README.md"), readme);
+        Console.WriteLine("  ✓ Generated README.md");
+        
         // Generate .gitignore
         if (config.GenerateGitIgnore)
         {

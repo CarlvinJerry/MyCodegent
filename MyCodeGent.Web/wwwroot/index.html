@@ -8,6 +8,69 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Theme Colors - Default Purple */
+            --primary-color: #6200ea;
+            --primary-light: #7c4dff;
+            --primary-dark: #5300d8;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            
+            /* Layout */
+            --layout-direction: column;
+            --tabs-direction: row;
+            --tabs-justify: flex-start;
+        }
+
+        /* Theme Presets */
+        [data-theme="purple"] {
+            --primary-color: #6200ea;
+            --primary-light: #7c4dff;
+            --primary-dark: #5300d8;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        [data-theme="blue"] {
+            --primary-color: #1976d2;
+            --primary-light: #42a5f5;
+            --primary-dark: #1565c0;
+            --primary-gradient: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        }
+
+        [data-theme="green"] {
+            --primary-color: #388e3c;
+            --primary-light: #66bb6a;
+            --primary-dark: #2e7d32;
+            --primary-gradient: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+        }
+
+        [data-theme="orange"] {
+            --primary-color: #f57c00;
+            --primary-light: #ff9800;
+            --primary-dark: #e65100;
+            --primary-gradient: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
+        [data-theme="red"] {
+            --primary-color: #d32f2f;
+            --primary-light: #ef5350;
+            --primary-dark: #c62828;
+            --primary-gradient: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+        }
+
+        [data-theme="teal"] {
+            --primary-color: #00897b;
+            --primary-light: #26a69a;
+            --primary-dark: #00796b;
+            --primary-gradient: linear-gradient(135deg, #26a69a 0%, #00796b 100%);
+        }
+
+        [data-theme="indigo"] {
+            --primary-color: #3949ab;
+            --primary-light: #5c6bc0;
+            --primary-dark: #283593;
+            --primary-gradient: linear-gradient(135deg, #5c6bc0 0%, #3949ab 100%);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -31,10 +94,11 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -47,15 +111,82 @@
             opacity: 0.9;
         }
 
+        .settings-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .settings-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
         .content {
             padding: 30px;
+            display: flex;
+            gap: 0;
+            flex-direction: var(--layout-direction);
         }
 
         .tabs {
             display: flex;
+            flex-direction: var(--tabs-direction);
             gap: 10px;
             margin-bottom: 30px;
             border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+            transition: all 0.3s;
+        }
+
+        /* Vertical layout styles */
+        .content[data-layout="vertical"] {
+            flex-direction: row;
+            gap: 0;
+            padding: 0;
+        }
+
+        .content[data-layout="vertical"] .tabs {
+            flex-direction: column;
+            min-width: 200px;
+            width: 200px;
+            margin-bottom: 0;
+            border-bottom: none;
+            border-right: 2px solid #e0e0e0;
+            padding: 30px 0;
+            gap: 0;
+        }
+
+        .content[data-layout="vertical"] .tab {
+            border-bottom: none;
+            border-left: 3px solid transparent;
+            text-align: left;
+            padding: 16px 24px;
+            border-radius: 0;
+        }
+
+        .content[data-layout="vertical"] .tab.active {
+            border-bottom-color: transparent;
+            border-left-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb, 98, 0, 234), 0.05);
+        }
+
+        .content[data-layout="vertical"] .tab-contents {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .tab-contents {
+            width: 100%;
         }
 
         .tab {
@@ -67,11 +198,12 @@
             color: #666;
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            white-space: nowrap;
         }
 
         .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
             font-weight: 600;
         }
 
@@ -113,7 +245,7 @@
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #6200ea;
+            border-color: var(--primary-color);
             border-width: 2px;
             padding: 15px 11px;
         }
@@ -138,12 +270,12 @@
         }
 
         .btn-primary {
-            background: #6200ea;
+            background: var(--primary-color);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #7c4dff;
+            background: var(--primary-light);
             box-shadow: 0 4px 8px rgba(0,0,0,0.14), 0 6px 8px rgba(0,0,0,0.12), 0 2px 10px rgba(0,0,0,0.2);
         }
 
@@ -153,12 +285,12 @@
 
         .btn-secondary {
             background: white;
-            color: #6200ea;
+            color: var(--primary-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.14);
         }
 
         .btn-secondary:hover {
-            background: rgba(98, 0, 234, 0.04);
+            background: rgba(var(--primary-color-rgb), 0.04);
         }
 
         .entity-list {
@@ -336,23 +468,226 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: #6200ea;
+            accent-color: var(--primary-color);
         }
 
         .checkbox-item label {
             cursor: pointer;
             user-select: none;
         }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.2);
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .settings-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .settings-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .settings-body {
+            padding: 24px;
+        }
+
+        .settings-section {
+            margin-bottom: 32px;
+        }
+
+        .settings-section h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: rgba(0, 0, 0, 0.87);
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .theme-option {
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .theme-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .theme-option.active {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.04);
+        }
+
+        .theme-color {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+        }
+
+        .theme-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .layout-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .layout-option {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .layout-option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .layout-option.active {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.04);
+        }
+
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .settings-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
 </head>
 <body>
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2>⚙️ Settings</h2>
+            <button class="settings-close" onclick="toggleSettings()">×</button>
+        </div>
+        <div class="settings-body">
+            <div class="settings-section">
+                <h3>🎨 Theme Color</h3>
+                <div class="theme-grid">
+                    <div class="theme-option active" data-theme="purple" onclick="changeTheme('purple')">
+                        <div class="theme-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        <div class="theme-name">Purple</div>
+                    </div>
+                    <div class="theme-option" data-theme="blue" onclick="changeTheme('blue')">
+                        <div class="theme-color" style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);"></div>
+                        <div class="theme-name">Blue</div>
+                    </div>
+                    <div class="theme-option" data-theme="green" onclick="changeTheme('green')">
+                        <div class="theme-color" style="background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);"></div>
+                        <div class="theme-name">Green</div>
+                    </div>
+                    <div class="theme-option" data-theme="orange" onclick="changeTheme('orange')">
+                        <div class="theme-color" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);"></div>
+                        <div class="theme-name">Orange</div>
+                    </div>
+                    <div class="theme-option" data-theme="red" onclick="changeTheme('red')">
+                        <div class="theme-color" style="background: linear-gradient(135deg, #e53935 0%, #c62828 100%);"></div>
+                        <div class="theme-name">Red</div>
+                    </div>
+                    <div class="theme-option" data-theme="teal" onclick="changeTheme('teal')">
+                        <div class="theme-color" style="background: linear-gradient(135deg, #26a69a 0%, #00796b 100%);"></div>
+                        <div class="theme-name">Teal</div>
+                    </div>
+                    <div class="theme-option" data-theme="indigo" onclick="changeTheme('indigo')">
+                        <div class="theme-color" style="background: linear-gradient(135deg, #5c6bc0 0%, #3949ab 100%);"></div>
+                        <div class="theme-name">Indigo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>📐 Menu Layout</h3>
+                <div class="layout-options">
+                    <div class="layout-option active" data-layout="horizontal" onclick="changeLayout('horizontal')">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">━</div>
+                        <div>Horizontal</div>
+                    </div>
+                    <div class="layout-option" data-layout="vertical" onclick="changeLayout('vertical')">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">┃</div>
+                        <div>Vertical</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
+            <button class="settings-icon" onclick="toggleSettings()">⚙️</button>
             <h1>🚀 MyCodeGent</h1>
             <p>CRUD Code Generator - Clean Architecture + CQRS Pattern</p>
         </div>
 
-        <div class="content">
+        <div class="content" id="mainContent">
             <div class="tabs">
                 <button class="tab active" onclick="switchTab('builder')">New Project</button>
                 <button class="tab" onclick="switchTab('incremental')">Add to Existing</button>
@@ -361,6 +696,7 @@
                 <button class="tab" onclick="switchTab('about')">ℹ️ About</button>
             </div>
 
+            <div class="tab-contents">
             <div id="builder-tab" class="tab-content active">
                 <div class="form-group">
                     <label>Root Namespace</label>
@@ -545,175 +881,18 @@
 
             <div id="about-tab" class="tab-content">
                 <div style="max-width: 900px; margin: 0 auto;">
-                    <h2 style="color: #667eea; margin-bottom: 20px;">📦 MyCodeGent - Version Information</h2>
+                    <h2 style="color: var(--primary-color); margin-bottom: 20px;">📦 MyCodeGent - Version Information</h2>
                     
-                    <!-- Version Card -->
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h3 style="margin: 0 0 10px 0; font-size: 2rem;">v2.0.0</h3>
-                                <p style="margin: 0; opacity: 0.9;">Complete Application Generator</p>
-                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Released: December 2024</p>
-                            </div>
-                            <div style="text-align: right;">
-                                <div id="updateStatus" style="padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 8px; font-weight: 600;">
-                                    ✅ Up to Date
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Loading State -->
+                    <div id="aboutLoading" style="text-align: center; padding: 50px;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">⏳</div>
+                        <p style="color: #666;">Loading version information...</p>
                     </div>
 
-                    <!-- What's New -->
-                    <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="color: #333; margin-top: 0;">🎉 What's New in v2.0.0</h3>
-                        <ul style="line-height: 1.8; color: #555;">
-                            <li><strong>Complete Application Generation</strong> - Program.cs, appsettings, project files</li>
-                            <li><strong>60+ Configuration Options</strong> - Full control over generated applications</li>
-                            <li><strong>Database Provider Selection</strong> - SQL Server, PostgreSQL, MySQL, SQLite, InMemory</li>
-                            <li><strong>Authentication Support</strong> - JWT, Identity, OAuth ready</li>
-                            <li><strong>Logging Integration</strong> - Serilog, NLog, Application Insights</li>
-                            <li><strong>API Documentation</strong> - Swagger/OpenAPI with XML comments</li>
-                            <li><strong>Incremental Generation</strong> - Add entities to existing projects</li>
-                            <li><strong>Comprehensive Documentation</strong> - Auto-generated README and architecture docs</li>
-                            <li><strong>Production Ready</strong> - Health checks, CORS, caching, error handling</li>
-                        </ul>
-                    </div>
-
-                    <!-- Technology Stack -->
-                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="color: #333; margin-top: 0;">🛠️ Technology Stack</h3>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-                            <div>
-                                <strong>Framework:</strong> ASP.NET Core 9.0<br>
-                                <strong>Architecture:</strong> Clean Architecture<br>
-                                <strong>Pattern:</strong> CQRS + MediatR<br>
-                                <strong>ORM:</strong> Entity Framework Core 9.0
-                            </div>
-                            <div>
-                                <strong>Validation:</strong> FluentValidation<br>
-                                <strong>Mapping:</strong> AutoMapper<br>
-                                <strong>API Docs:</strong> Swagger/OpenAPI<br>
-                                <strong>Logging:</strong> Serilog
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Package Versions -->
-                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="color: #333; margin-top: 0;">📦 Key Package Versions</h3>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.9rem;">
-                            <div>• MediatR: <strong>12.4.1</strong></div>
-                            <div>• FluentValidation: <strong>11.11.0</strong></div>
-                            <div>• AutoMapper: <strong>13.0.1</strong></div>
-                            <div>• Swashbuckle: <strong>7.2.0</strong></div>
-                            <div>• EF Core: <strong>9.0.0</strong></div>
-                            <div>• Serilog: <strong>8.0.3</strong></div>
-                        </div>
-                    </div>
-
-                    <!-- Features Checklist -->
-                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="color: #333; margin-top: 0;">✨ Feature Checklist</h3>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                            <div>
-                                <strong>Code Generation:</strong><br>
-                                ✅ Domain Layer<br>
-                                ✅ Application Layer (CQRS)<br>
-                                ✅ Infrastructure Layer<br>
-                                ✅ API Layer<br>
-                                ✅ Incremental Updates
-                            </div>
-                            <div>
-                                <strong>Application Setup:</strong><br>
-                                ✅ Program.cs<br>
-                                ✅ Configuration Files<br>
-                                ✅ Project Files (.csproj)<br>
-                                ✅ Documentation<br>
-                                ✅ .gitignore
-                            </div>
-                            <div>
-                                <strong>Database Support:</strong><br>
-                                ✅ SQL Server<br>
-                                ✅ PostgreSQL<br>
-                                ✅ MySQL<br>
-                                ✅ SQLite<br>
-                                ✅ InMemory
-                            </div>
-                            <div>
-                                <strong>Cross-Cutting:</strong><br>
-                                ✅ Authentication (JWT)<br>
-                                ✅ Logging (Serilog)<br>
-                                ✅ Health Checks<br>
-                                ✅ CORS<br>
-                                ✅ Error Handling
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Standards Compliance -->
-                    <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                        <h3 style="color: #2e7d32; margin-top: 0;">✅ Standards Compliance</h3>
-                        <ul style="margin: 0; padding-left: 20px; color: #1b5e20;">
-                            <li><strong>.NET 9.0</strong> - Latest LTS framework</li>
-                            <li><strong>Clean Architecture</strong> - Industry best practices</li>
-                            <li><strong>SOLID Principles</strong> - Maintainable code</li>
-                            <li><strong>RESTful API</strong> - Standard HTTP methods</li>
-                            <li><strong>OpenAPI 3.0</strong> - API documentation standard</li>
-                            <li><strong>Semantic Versioning</strong> - Version management</li>
-                        </ul>
-                    </div>
-
-                    <!-- Upgrade Path -->
-                    <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                        <h3 style="color: #e65100; margin-top: 0;">🔄 Future Upgrade Path</h3>
-                        <p style="margin: 0 0 15px 0; color: #bf360c;">
-                            <strong>Planned for v2.1.0:</strong>
-                        </p>
-                        <ul style="margin: 0; padding-left: 20px; color: #d84315;">
-                            <li>Blazor WebAssembly support</li>
-                            <li>Docker & Kubernetes templates</li>
-                            <li>Unit & Integration test generation</li>
-                            <li>CI/CD pipeline templates (GitHub Actions, Azure DevOps)</li>
-                            <li>Advanced authentication (OAuth, Azure AD)</li>
-                            <li>Caching strategies (Redis, Distributed)</li>
-                            <li>API versioning support</li>
-                            <li>GraphQL endpoint generation</li>
-                        </ul>
-                    </div>
-
-                    <!-- Check for Updates Button -->
-                    <div style="text-align: center; margin-top: 30px;">
-                        <button class="btn btn-primary" onclick="checkForUpdates()" style="padding: 15px 40px; font-size: 1.1rem;">
-                            🔍 Check for Updates
-                        </button>
-                    </div>
-
-                    <!-- System Info -->
-                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 30px; font-size: 0.85rem; color: #666;">
-                        <strong>System Information:</strong><br>
-                        Generator Version: <span id="generatorVersion">Loading...</span><br>
-                        .NET Version: <span id="dotnetVersion">Loading...</span><br>
-                        Runtime: <span id="runtimeVersion">Loading...</span><br>
-                        OS: <span id="osDescription">Loading...</span><br>
-                        Architecture: <span id="processArchitecture">Loading...</span><br>
-                        Last Updated: <span id="lastUpdated">Loading...</span><br>
-                        Build: <span id="buildNumber">Loading...</span><br>
-                        Build Date: <span id="buildDate">Loading...</span>
-                    </div>
-
-                    <!-- Links -->
-                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
-                        <a href="https://github.com/yourusername/mycodegent" target="_blank" style="color: #667eea; text-decoration: none; margin: 0 15px; font-weight: 600;">
-                            📚 Documentation
-                        </a>
-                        <a href="https://github.com/yourusername/mycodegent/releases" target="_blank" style="color: #667eea; text-decoration: none; margin: 0 15px; font-weight: 600;">
-                            📋 Release Notes
-                        </a>
-                        <a href="https://github.com/yourusername/mycodegent/issues" target="_blank" style="color: #667eea; text-decoration: none; margin: 0 15px; font-weight: 600;">
-                            🐛 Report Issue
-                        </a>
-                    </div>
+                    <!-- Content Container (populated dynamically) -->
+                    <div id="aboutContent" style="display: none;"></div>
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -722,6 +901,59 @@
         const API_BASE = window.location.origin + '/api/codegen';
         let entities = [];
         let currentEntityId = 0;
+
+        // Theme and Layout Functions
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('settingsOverlay');
+            panel.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        function changeTheme(theme) {
+            // Update data-theme attribute
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            // Update active state
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`[data-theme="${theme}"]`).classList.add('active');
+            
+            // Save to localStorage
+            localStorage.setItem('theme', theme);
+        }
+
+        function changeLayout(layout) {
+            const mainContent = document.getElementById('mainContent');
+            
+            if (layout === 'vertical') {
+                mainContent.setAttribute('data-layout', 'vertical');
+            } else {
+                mainContent.removeAttribute('data-layout');
+            }
+            
+            // Update active state
+            document.querySelectorAll('.layout-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`[data-layout="${layout}"]`).classList.add('active');
+            
+            // Save to localStorage
+            localStorage.setItem('layout', layout);
+        }
+
+        // Load saved preferences on page load
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('theme') || 'purple';
+            const savedLayout = localStorage.getItem('layout') || 'horizontal';
+            
+            changeTheme(savedTheme);
+            changeLayout(savedLayout);
+        }
+
+        // Load preferences when page loads
+        window.addEventListener('DOMContentLoaded', loadPreferences);
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1362,39 +1594,165 @@
             alert('Advanced property constraints coming soon!\n\nPlanned features:\n- Min/Max Length\n- Range validation\n- Regex patterns\n- Default values\n- Foreign keys\n- Navigation properties');
         }
 
-        // Load Version Information
+        // Load Version Information and Build About Page
         async function loadVersionInfo() {
+            const loading = document.getElementById('aboutLoading');
+            const content = document.getElementById('aboutContent');
+            
             try {
                 const response = await fetch(`${API_BASE}/version`);
-                const versionData = await response.json();
+                const data = await response.json();
                 
-                // Update UI with actual version information
-                document.getElementById('generatorVersion').textContent = versionData.version;
-                document.getElementById('dotnetVersion').textContent = versionData.dotnetVersion;
-                document.getElementById('runtimeVersion').textContent = versionData.runtimeVersion;
-                document.getElementById('osDescription').textContent = versionData.osDescription;
-                document.getElementById('processArchitecture').textContent = versionData.processArchitecture;
-                document.getElementById('lastUpdated').textContent = versionData.lastUpdated;
-                document.getElementById('buildNumber').textContent = versionData.buildNumber;
-                document.getElementById('buildDate').textContent = new Date(versionData.buildDate).toLocaleDateString();
+                // Build the entire About page dynamically
+                content.innerHTML = `
+                    <!-- Version Card -->
+                    <div style="background: var(--primary-gradient); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                            <div>
+                                <h3 style="margin: 0 0 10px 0; font-size: 2rem;">v${data.version}</h3>
+                                <p style="margin: 0; opacity: 0.9;">${data.codeName}</p>
+                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Released: ${data.lastUpdated}</p>
+                                ${data.git && data.git.branch ? `
+                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.85rem;">
+                                        Branch: ${data.git.branch} | Commit: ${data.git.commitHash}
+                                        ${!data.git.isClean ? ' <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px;">Modified</span>' : ''}
+                                    </p>
+                                ` : ''}
+                            </div>
+                            <div style="text-align: right;">
+                                <div id="updateStatus" style="padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 8px; font-weight: 600;">
+                                    ✅ Up to Date
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    ${data.features ? `
+                    <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin-top: 0;">✨ Features</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            ${data.features.completeAppGeneration ? '<div>✅ Complete Application Generation</div>' : ''}
+                            ${data.features.incrementalGeneration ? '<div>✅ Incremental Generation</div>' : ''}
+                            ${data.features.documentation ? '<div>✅ Auto Documentation</div>' : ''}
+                            ${data.features.swagger ? '<div>✅ Swagger/OpenAPI</div>' : ''}
+                            ${data.features.healthChecks ? '<div>✅ Health Checks</div>' : ''}
+                            ${data.features.validation ? '<div>✅ FluentValidation</div>' : ''}
+                        </div>
+                        
+                        ${data.features.databaseProviders ? `
+                        <div style="margin-top: 20px;">
+                            <strong>Database Providers:</strong><br>
+                            ${data.features.databaseProviders.map(db => `<span style="display: inline-block; background: white; padding: 5px 12px; margin: 5px 5px 0 0; border-radius: 4px; font-size: 0.9rem;">${db}</span>`).join('')}
+                        </div>
+                        ` : ''}
+                        
+                        ${data.features.authentication ? `
+                        <div style="margin-top: 15px;">
+                            <strong>Authentication:</strong><br>
+                            ${data.features.authentication.map(auth => `<span style="display: inline-block; background: white; padding: 5px 12px; margin: 5px 5px 0 0; border-radius: 4px; font-size: 0.9rem;">${auth}</span>`).join('')}
+                        </div>
+                        ` : ''}
+                        
+                        ${data.features.logging ? `
+                        <div style="margin-top: 15px;">
+                            <strong>Logging:</strong><br>
+                            ${data.features.logging.map(log => `<span style="display: inline-block; background: white; padding: 5px 12px; margin: 5px 5px 0 0; border-radius: 4px; font-size: 0.9rem;">${log}</span>`).join('')}
+                        </div>
+                        ` : ''}
+                        
+                        ${data.features.propertyTypes ? `
+                        <div style="margin-top: 15px;">
+                            <strong>Property Types Supported:</strong> ${data.features.propertyTypes}+
+                        </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+
+                    <!-- Package Versions -->
+                    ${data.packages ? `
+                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin-top: 0;">📦 Key Package Versions</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 0.9rem;">
+                            ${data.packages.MediatR ? `<div>• MediatR: <strong>${data.packages.MediatR}</strong></div>` : ''}
+                            ${data.packages.FluentValidation ? `<div>• FluentValidation: <strong>${data.packages.FluentValidation}</strong></div>` : ''}
+                            ${data.packages.AutoMapper ? `<div>• AutoMapper: <strong>${data.packages.AutoMapper}</strong></div>` : ''}
+                            ${data.packages.Swashbuckle ? `<div>• Swashbuckle: <strong>${data.packages.Swashbuckle}</strong></div>` : ''}
+                            ${data.packages.EntityFrameworkCore ? `<div>• EF Core: <strong>${data.packages.EntityFrameworkCore}</strong></div>` : ''}
+                            ${data.packages.Serilog ? `<div>• Serilog: <strong>${data.packages.Serilog}</strong></div>` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- System Information -->
+                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin-top: 0;">💻 System Information</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; font-size: 0.9rem;">
+                            <div>
+                                <strong>Generator Version:</strong><br>${data.version}
+                            </div>
+                            <div>
+                                <strong>.NET Version:</strong><br>${data.dotnetVersion}
+                            </div>
+                            <div>
+                                <strong>Runtime:</strong><br>${data.runtimeVersion}
+                            </div>
+                            <div>
+                                <strong>OS:</strong><br>${data.osDescription}
+                            </div>
+                            <div>
+                                <strong>Architecture:</strong><br>${data.processArchitecture}
+                            </div>
+                            <div>
+                                <strong>Build:</strong><br>${data.buildNumber}
+                            </div>
+                            <div>
+                                <strong>Build Date:</strong><br>${new Date(data.buildDate).toLocaleDateString()}
+                            </div>
+                            ${data.git && data.git.commitDate ? `
+                            <div>
+                                <strong>Last Commit:</strong><br>${new Date(data.git.commitDate).toLocaleDateString()}
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        ${data.git && data.git.commitMessage ? `
+                        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <strong>Latest Commit:</strong><br>
+                            <span style="font-family: monospace; font-size: 0.85rem;">${data.git.commitMessage}</span>
+                            ${data.git.commitAuthor ? `<br><span style="font-size: 0.85rem; color: #666;">by ${data.git.commitAuthor}</span>` : ''}
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Check for Updates Button -->
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="checkForUpdates()" style="padding: 15px 40px; font-size: 1.1rem;">
+                            🔍 Check for Updates
+                        </button>
+                    </div>
+                `;
                 
-                // Update version in header
-                const versionHeader = document.querySelector('#about-tab h3');
-                if (versionHeader) {
-                    versionHeader.textContent = `v${versionData.version}`;
-                }
+                // Hide loading, show content
+                loading.style.display = 'none';
+                content.style.display = 'block';
                 
-                console.log('Version info loaded:', versionData);
+                console.log('Version info loaded:', data);
             } catch (error) {
                 console.error('Failed to load version info:', error);
-                document.getElementById('generatorVersion').textContent = 'Error loading';
-                document.getElementById('dotnetVersion').textContent = 'Error loading';
-                document.getElementById('runtimeVersion').textContent = 'Error loading';
-                document.getElementById('osDescription').textContent = 'Error loading';
-                document.getElementById('processArchitecture').textContent = 'Error loading';
-                document.getElementById('lastUpdated').textContent = 'Error loading';
-                document.getElementById('buildNumber').textContent = 'Error loading';
-                document.getElementById('buildDate').textContent = 'Error loading';
+                content.innerHTML = `
+                    <div style="background: #ffebee; border-left: 4px solid #f44336; padding: 20px; border-radius: 8px;">
+                        <h3 style="color: #c62828; margin-top: 0;">❌ Error Loading Version Information</h3>
+                        <p style="color: #b71c1c; margin: 0;">
+                            Failed to load version information from the server. Please try refreshing the page.
+                        </p>
+                        <p style="color: #d32f2f; margin: 10px 0 0 0; font-size: 0.9rem;">
+                            Error: ${error.message}
+                        </p>
+                    </div>
+                `;
+                loading.style.display = 'none';
+                content.style.display = 'block';
             }
         }
 
