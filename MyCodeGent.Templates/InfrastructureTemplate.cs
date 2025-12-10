@@ -39,6 +39,10 @@ public static class InfrastructureTemplate
             sb.AppendLine($"        modelBuilder.ApplyConfiguration(new {entity.Name}Configuration());");
         }
         
+        sb.AppendLine();
+        sb.AppendLine("        // Seed initial data");
+        sb.AppendLine("        ApplicationDbContextSeed.SeedData(modelBuilder);");
+        
         sb.AppendLine("    }");
         sb.AppendLine();
         sb.AppendLine("    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)");

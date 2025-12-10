@@ -538,6 +538,12 @@ public class CodeGenController : ControllerBase
             await _fileWriter.WriteFileAsync(Path.Combine(mappingPath, "MappingProfile.cs"), masterProfile);
             _logger.LogInformation("Generated Master AutoMapper Profile");
         }
+        
+        // Generate Seed Data
+        var seedDataPath = Path.Combine(config.OutputPath, "Infrastructure", "Persistence");
+        var seedData = MyCodeGent.Templates.SeedDataTemplate.Generate(entities, config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(seedDataPath, "ApplicationDbContextSeed.cs"), seedData);
+        _logger.LogInformation("Generated Seed Data");
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)
