@@ -849,6 +849,87 @@
             font-size: 0.75rem;
             color: #666;
         }
+
+        /* Business Keys Modal */
+        .business-keys-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 550px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .business-keys-modal.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .business-key-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .business-key-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .business-key-info {
+            flex: 1;
+        }
+
+        .business-key-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .business-key-type {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .business-key-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #4caf50;
+            color: white;
+        }
+
+        .composite-key-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .composite-key-section h5 {
+            margin: 0 0 12px 0;
+            color: #1976d2;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 <body>
@@ -915,6 +996,7 @@
     <!-- Modal Overlays -->
     <div class="modal-overlay" id="constraintsOverlay" onclick="closeConstraintsModal()"></div>
     <div class="modal-overlay" id="relationshipOverlay" onclick="closeRelationshipModal()"></div>
+    <div class="modal-overlay" id="businessKeysOverlay" onclick="closeBusinessKeysModal()"></div>
 
     <!-- Property Constraints Modal -->
     <div class="constraints-modal" id="constraintsModal">
@@ -1137,6 +1219,51 @@
         <div class="constraints-modal-footer">
             <button class="btn btn-secondary" onclick="closeRelationshipModal()">Cancel</button>
             <button class="btn btn-primary" onclick="saveRelationship()">Create Relationship</button>
+        </div>
+    </div>
+
+    <!-- Business Keys Modal -->
+    <div class="business-keys-modal" id="businessKeysModal">
+        <div class="constraints-modal-header">
+            <h3>🔑 Business Keys</h3>
+            <button class="constraints-modal-close" onclick="closeBusinessKeysModal()">×</button>
+        </div>
+        <div class="constraints-modal-body">
+            <div style="background: #fff3cd; padding: 12px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                <strong>ℹ️ What are Business Keys?</strong>
+                <p style="margin: 5px 0 0 0; font-size: 0.875rem;">
+                    Business keys are alternate unique identifiers (e.g., Email, SKU, SSN) that uniquely identify records in business logic, separate from the database primary key (Id).
+                </p>
+            </div>
+
+            <div id="businessKeysEntityInfo" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+                <strong>Entity:</strong> <span id="businessKeysEntityName"></span>
+            </div>
+
+            <h4 style="margin: 0 0 12px 0; font-size: 1rem; font-weight: 600;">Select Properties as Business Keys</h4>
+            
+            <div id="businessKeysList" style="margin-bottom: 20px;">
+                <!-- Properties will be listed here -->
+            </div>
+
+            <div class="composite-key-section">
+                <h5>💡 Composite Keys</h5>
+                <p style="margin: 0; font-size: 0.875rem;">
+                    Select multiple properties to create a composite business key. 
+                    Example: FirstName + LastName, or CountryCode + PhoneNumber
+                </p>
+            </div>
+
+            <div style="margin-top: 20px; padding: 12px; background: #e8f5e9; border-radius: 6px; border-left: 4px solid #4caf50;">
+                <strong>✓ Selected Keys:</strong>
+                <div id="selectedKeysDisplay" style="margin-top: 8px; font-size: 0.875rem; color: #2e7d32;">
+                    None selected
+                </div>
+            </div>
+        </div>
+        <div class="constraints-modal-footer">
+            <button class="btn btn-secondary" onclick="closeBusinessKeysModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveBusinessKeys()">Save Business Keys</button>
         </div>
     </div>
 
@@ -1493,6 +1620,10 @@
                                     style="padding: 8px 16px; font-size: 0.9rem;">
                                 🔗 Relationships
                             </button>
+                            <button class="btn btn-secondary" onclick="showBusinessKeys(${entity.id})" 
+                                    style="padding: 8px 16px; font-size: 0.9rem;">
+                                🔑 Business Keys
+                            </button>
                             <button class="btn btn-secondary" onclick="removeEntity(${entity.id})">Remove</button>
                         </div>
                     </div>
@@ -1808,6 +1939,10 @@
                             <button class="btn btn-secondary" onclick="showIncrementalEntityRelationships(${entity.id})" 
                                     style="padding: 8px 16px; font-size: 0.9rem;">
                                 🔗 Relationships
+                            </button>
+                            <button class="btn btn-secondary" onclick="showIncrementalBusinessKeys(${entity.id})" 
+                                    style="padding: 8px 16px; font-size: 0.9rem;">
+                                🔑 Business Keys
                             </button>
                             <button class="btn btn-secondary" onclick="removeEntityIncremental(${entity.id})">Remove</button>
                         </div>
@@ -2436,6 +2571,143 @@
             currentRelationshipEntity = null;
             selectedRelationshipType = null;
             currentRelationshipIsIncremental = false;
+        }
+
+        // Business Keys Management Functions
+        let currentBusinessKeysEntity = null;
+        let currentBusinessKeysIsIncremental = false;
+        let selectedBusinessKeys = [];
+
+        function showBusinessKeys(entityId) {
+            currentBusinessKeysIsIncremental = false;
+            openBusinessKeysModal(entityId, entities);
+        }
+
+        function showIncrementalBusinessKeys(entityId) {
+            currentBusinessKeysIsIncremental = true;
+            openBusinessKeysModal(entityId, incrementalEntities);
+        }
+
+        function openBusinessKeysModal(entityId, entityList) {
+            const entity = entityList.find(e => e.id === entityId);
+            if (!entity) return;
+
+            currentBusinessKeysEntity = entityId;
+
+            // Set entity name
+            document.getElementById('businessKeysEntityName').textContent = entity.name;
+
+            // Initialize business keys if not exists
+            if (!entity.businessKeys) {
+                entity.businessKeys = [];
+            }
+
+            // Load existing business keys
+            selectedBusinessKeys = [...entity.businessKeys];
+
+            // Render properties list
+            renderBusinessKeysList(entity);
+
+            // Show modal
+            document.getElementById('businessKeysModal').classList.add('open');
+            document.getElementById('businessKeysOverlay').classList.add('open');
+        }
+
+        function renderBusinessKeysList(entity) {
+            const container = document.getElementById('businessKeysList');
+            
+            if (!entity.properties || entity.properties.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-style: italic;">No properties available. Add properties first.</p>';
+                return;
+            }
+
+            container.innerHTML = entity.properties.map((prop, idx) => {
+                const isSelected = selectedBusinessKeys.includes(prop.name);
+                const isKey = prop.isKey;
+                
+                return `
+                    <div class="business-key-item">
+                        <input type="checkbox" 
+                               id="bk_${idx}" 
+                               ${isSelected ? 'checked' : ''}
+                               ${isKey ? 'disabled' : ''}
+                               onchange="toggleBusinessKey('${prop.name}', this.checked)">
+                        <div class="business-key-info">
+                            <div class="business-key-name">${prop.name}</div>
+                            <div class="business-key-type">${prop.type}${prop.isRequired ? ' (Required)' : ''}</div>
+                        </div>
+                        ${isKey ? '<span class="business-key-badge">Primary Key</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            updateSelectedKeysDisplay();
+        }
+
+        function toggleBusinessKey(propertyName, isChecked) {
+            if (isChecked) {
+                if (!selectedBusinessKeys.includes(propertyName)) {
+                    selectedBusinessKeys.push(propertyName);
+                }
+            } else {
+                selectedBusinessKeys = selectedBusinessKeys.filter(k => k !== propertyName);
+            }
+            updateSelectedKeysDisplay();
+        }
+
+        function updateSelectedKeysDisplay() {
+            const display = document.getElementById('selectedKeysDisplay');
+            
+            if (selectedBusinessKeys.length === 0) {
+                display.textContent = 'None selected';
+                display.style.color = '#666';
+            } else if (selectedBusinessKeys.length === 1) {
+                display.textContent = `Single Key: ${selectedBusinessKeys[0]}`;
+                display.style.color = '#2e7d32';
+            } else {
+                display.textContent = `Composite Key: ${selectedBusinessKeys.join(' + ')}`;
+                display.style.color = '#1976d2';
+            }
+        }
+
+        function saveBusinessKeys() {
+            if (currentBusinessKeysEntity === null) return;
+
+            const entityList = currentBusinessKeysIsIncremental ? incrementalEntities : entities;
+            const entity = entityList.find(e => e.id === currentBusinessKeysEntity);
+            if (!entity) return;
+
+            // Save business keys
+            entity.businessKeys = [...selectedBusinessKeys];
+
+            // Close modal
+            closeBusinessKeysModal();
+
+            // Show success message
+            if (selectedBusinessKeys.length === 0) {
+                console.log('Business keys cleared for:', entity.name);
+            } else if (selectedBusinessKeys.length === 1) {
+                console.log('Single business key set:', selectedBusinessKeys[0]);
+                alert(`Business key set: ${selectedBusinessKeys[0]}`);
+            } else {
+                console.log('Composite business key set:', selectedBusinessKeys.join(' + '));
+                alert(`Composite business key set: ${selectedBusinessKeys.join(' + ')}`);
+            }
+
+            // Re-render
+            if (currentBusinessKeysIsIncremental) {
+                renderIncrementalEntities();
+            } else {
+                renderEntities();
+            }
+        }
+
+        function closeBusinessKeysModal() {
+            document.getElementById('businessKeysModal').classList.remove('open');
+            document.getElementById('businessKeysOverlay').classList.remove('open');
+            currentBusinessKeysEntity = null;
+            currentBusinessKeysIsIncremental = false;
+            selectedBusinessKeys = [];
         }
 
         // Load Version Information and Build About Page
