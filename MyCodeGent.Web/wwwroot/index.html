@@ -753,6 +753,102 @@
             opacity: 1;
             visibility: visible;
         }
+
+        /* Relationship Modal */
+        .relationship-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 650px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .relationship-modal.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .relationship-type-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .relationship-type-option {
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .relationship-type-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .relationship-type-option.active {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb, 98, 0, 234), 0.05);
+        }
+
+        .relationship-type-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .relationship-type-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .relationship-type-desc {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .relationship-field {
+            margin-bottom: 16px;
+        }
+
+        .relationship-field label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .relationship-field select,
+        .relationship-field input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .relationship-field small {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.75rem;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -816,8 +912,9 @@
         </div>
     </div>
 
-    <!-- Property Constraints Modal Overlay -->
+    <!-- Modal Overlays -->
     <div class="modal-overlay" id="constraintsOverlay" onclick="closeConstraintsModal()"></div>
+    <div class="modal-overlay" id="relationshipOverlay" onclick="closeRelationshipModal()"></div>
 
     <!-- Property Constraints Modal -->
     <div class="constraints-modal" id="constraintsModal">
@@ -939,6 +1036,107 @@
         <div class="constraints-modal-footer">
             <button class="btn btn-secondary" onclick="closeConstraintsModal()">Cancel</button>
             <button class="btn btn-primary" onclick="saveConstraints()">Save Constraints</button>
+        </div>
+    </div>
+
+    <!-- Relationship Configuration Modal -->
+    <div class="relationship-modal" id="relationshipModal">
+        <div class="constraints-modal-header">
+            <h3>🔗 Configure Relationship</h3>
+            <button class="constraints-modal-close" onclick="closeRelationshipModal()">×</button>
+        </div>
+        <div class="constraints-modal-body">
+            <div id="relationshipPropertyInfo" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+                <strong>Property:</strong> <span id="relationshipPropertyName"></span> (<span id="relationshipPropertyType"></span>)
+            </div>
+
+            <!-- Relationship Type Selector -->
+            <div class="relationship-field">
+                <label>Relationship Type</label>
+                <div class="relationship-type-selector">
+                    <div class="relationship-type-option" data-type="OneToMany" onclick="selectRelationshipType('OneToMany')">
+                        <div class="relationship-type-icon">1→∞</div>
+                        <div class="relationship-type-name">One-to-Many</div>
+                        <div class="relationship-type-desc">One parent, many children</div>
+                    </div>
+                    <div class="relationship-type-option" data-type="ManyToOne" onclick="selectRelationshipType('ManyToOne')">
+                        <div class="relationship-type-icon">∞→1</div>
+                        <div class="relationship-type-name">Many-to-One</div>
+                        <div class="relationship-type-desc">Many children, one parent</div>
+                    </div>
+                    <div class="relationship-type-option" data-type="OneToOne" onclick="selectRelationshipType('OneToOne')">
+                        <div class="relationship-type-icon">1→1</div>
+                        <div class="relationship-type-name">One-to-One</div>
+                        <div class="relationship-type-desc">Exclusive relationship</div>
+                    </div>
+                    <div class="relationship-type-option" data-type="ManyToMany" onclick="selectRelationshipType('ManyToMany')">
+                        <div class="relationship-type-icon">∞↔∞</div>
+                        <div class="relationship-type-name">Many-to-Many</div>
+                        <div class="relationship-type-desc">Multiple on both sides</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Entity -->
+            <div class="relationship-field">
+                <label>Related Entity</label>
+                <select id="relatedEntity" onchange="updateRelationshipFields()">
+                    <option value="">-- Select Entity --</option>
+                </select>
+                <small>The entity this property relates to</small>
+            </div>
+
+            <!-- Foreign Key Property -->
+            <div class="relationship-field" id="foreignKeyField">
+                <label>Foreign Key Property</label>
+                <input type="text" id="foreignKeyProperty" placeholder="e.g., CustomerId">
+                <small>Property that stores the foreign key (usually ends with 'Id')</small>
+            </div>
+
+            <!-- Principal Key -->
+            <div class="relationship-field" id="principalKeyField">
+                <label>Principal Key</label>
+                <select id="principalKey">
+                    <option value="Id">Id (Primary Key)</option>
+                </select>
+                <small>Key in the related entity (usually primary key)</small>
+            </div>
+
+            <!-- Navigation Properties -->
+            <div class="relationship-field">
+                <label>Navigation Property (This Entity)</label>
+                <input type="text" id="navigationProperty" placeholder="e.g., Customer, Orders">
+                <small>Property name to navigate to related entity/entities</small>
+            </div>
+
+            <div class="relationship-field">
+                <label>Inverse Navigation Property (Related Entity)</label>
+                <input type="text" id="inverseNavigationProperty" placeholder="e.g., Orders, Customer">
+                <small>Property name in related entity to navigate back</small>
+            </div>
+
+            <!-- Cascade Options -->
+            <div class="relationship-field">
+                <label>On Delete Behavior</label>
+                <select id="onDeleteBehavior">
+                    <option value="Cascade">Cascade - Delete related records</option>
+                    <option value="SetNull">Set Null - Set FK to null</option>
+                    <option value="Restrict">Restrict - Prevent deletion</option>
+                    <option value="NoAction">No Action - Do nothing</option>
+                </select>
+                <small>What happens when parent is deleted</small>
+            </div>
+
+            <!-- Join Table (Many-to-Many) -->
+            <div class="relationship-field" id="joinTableField" style="display: none;">
+                <label>Join Table Name</label>
+                <input type="text" id="joinTableName" placeholder="e.g., StudentCourse">
+                <small>Intermediate table for many-to-many relationship</small>
+            </div>
+        </div>
+        <div class="constraints-modal-footer">
+            <button class="btn btn-secondary" onclick="closeRelationshipModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveRelationship()">Create Relationship</button>
         </div>
     </div>
 
@@ -1290,7 +1488,13 @@
                         <input type="text" value="${entity.name}" 
                                onchange="updateEntityName(${entity.id}, this.value)"
                                style="width: 200px; font-weight: 600; font-size: 1.1rem;">
-                        <button class="btn btn-secondary" onclick="removeEntity(${entity.id})">Remove</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="showEntityRelationships(${entity.id})" 
+                                    style="padding: 8px 16px; font-size: 0.9rem;">
+                                🔗 Relationships
+                            </button>
+                            <button class="btn btn-secondary" onclick="removeEntity(${entity.id})">Remove</button>
+                        </div>
                     </div>
                     <div class="checkbox-group" style="margin: 10px 0;">
                         <div class="checkbox-item">
@@ -1512,7 +1716,9 @@
                     name: entity.name,
                     hasAuditFields: entity.hasAuditFields,
                     hasSoftDelete: entity.hasSoftDelete,
-                    properties: entity.properties
+                    properties: entity.properties,
+                    relationships: entity.relationships || [],
+                    businessKeys: entity.businessKeys || []
                 }
             };
 
@@ -1598,7 +1804,13 @@
                         <input type="text" value="${entity.name}" 
                                onchange="updateIncrementalEntityName(${entity.id}, this.value)"
                                style="width: 200px; font-weight: 600; font-size: 1.1rem;">
-                        <button class="btn btn-secondary" onclick="removeEntityIncremental(${entity.id})">Remove</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" onclick="showIncrementalEntityRelationships(${entity.id})" 
+                                    style="padding: 8px 16px; font-size: 0.9rem;">
+                                🔗 Relationships
+                            </button>
+                            <button class="btn btn-secondary" onclick="removeEntityIncremental(${entity.id})">Remove</button>
+                        </div>
                     </div>
                     <div class="checkbox-group" style="margin: 10px 0;">
                         <div class="checkbox-item">
@@ -1644,6 +1856,8 @@
                                            placeholder="Max Length"
                                            style="width: 90px; font-size: 0.85rem;">
                                 ` : ''}
+                                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; margin-left: auto;"
+                                        onclick="showPropertyConstraints(${entity.id}, ${idx}, true)">⚙️</button>
                                 <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;"
                                         onclick="removePropertyIncremental(${entity.id}, ${idx})">×</button>
                             </div>
@@ -1915,10 +2129,14 @@
         // Property Constraints Modal Functions
         let currentConstraintsEntity = null;
         let currentConstraintsProperty = null;
+        let currentConstraintsIsIncremental = false;
 
-        function showPropertyConstraints(entityId, propIdx) {
-            const entity = entities.find(e => e.id === entityId);
+        function showPropertyConstraints(entityId, propIdx, isIncremental = false) {
+            const entityList = isIncremental ? incrementalEntities : entities;
+            const entity = entityList.find(e => e.id === entityId);
             if (!entity || !entity.properties[propIdx]) return;
+            
+            currentConstraintsIsIncremental = isIncremental;
 
             const property = entity.properties[propIdx];
             currentConstraintsEntity = entityId;
@@ -1985,7 +2203,8 @@
         function saveConstraints() {
             if (currentConstraintsEntity === null || currentConstraintsProperty === null) return;
 
-            const entity = entities.find(e => e.id === currentConstraintsEntity);
+            const entityList = currentConstraintsIsIncremental ? incrementalEntities : entities;
+            const entity = entityList.find(e => e.id === currentConstraintsEntity);
             if (!entity) return;
 
             const property = entity.properties[currentConstraintsProperty];
@@ -2025,7 +2244,11 @@
             console.log('Constraints saved for property:', property.name, property.constraints);
             
             // Re-render to show constraint indicator
-            renderEntities();
+            if (currentConstraintsIsIncremental) {
+                renderIncrementalEntities();
+            } else {
+                renderEntities();
+            }
         }
 
         function closeConstraintsModal() {
@@ -2033,6 +2256,186 @@
             document.getElementById('constraintsOverlay').classList.remove('open');
             currentConstraintsEntity = null;
             currentConstraintsProperty = null;
+            currentConstraintsIsIncremental = false;
+        }
+
+        // Relationship Management Functions
+        let currentRelationshipEntity = null;
+        let selectedRelationshipType = null;
+        let currentRelationshipIsIncremental = false;
+
+        function showEntityRelationships(entityId) {
+            currentRelationshipIsIncremental = false;
+            openRelationshipModal(entityId, entities);
+        }
+
+        function showIncrementalEntityRelationships(entityId) {
+            currentRelationshipIsIncremental = true;
+            openRelationshipModal(entityId, incrementalEntities);
+        }
+
+        function openRelationshipModal(entityId, entityList) {
+            const entity = entityList.find(e => e.id === entityId);
+            if (!entity) return;
+
+            currentRelationshipEntity = entityId;
+
+            // Initialize relationships array if not exists
+            if (!entity.relationships) {
+                entity.relationships = [];
+            }
+
+            // Populate related entity dropdown
+            const relatedEntitySelect = document.getElementById('relatedEntity');
+            relatedEntitySelect.innerHTML = '<option value="">-- Select Entity --</option>' +
+                entityList.filter(e => e.id !== entityId)
+                    .map(e => `<option value="${e.id}">${e.name}</option>`)
+                    .join('');
+
+            // Reset form
+            document.getElementById('foreignKeyProperty').value = '';
+            document.getElementById('navigationProperty').value = '';
+            document.getElementById('inverseNavigationProperty').value = '';
+            document.getElementById('joinTableName').value = '';
+            document.getElementById('onDeleteBehavior').value = 'Cascade';
+
+            // Clear relationship type selection
+            document.querySelectorAll('.relationship-type-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            selectedRelationshipType = null;
+
+            // Show modal
+            document.getElementById('relationshipModal').classList.add('open');
+            document.getElementById('relationshipOverlay').classList.add('open');
+        }
+
+        function selectRelationshipType(type) {
+            selectedRelationshipType = type;
+
+            // Update UI
+            document.querySelectorAll('.relationship-type-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+
+            // Show/hide fields based on type
+            const foreignKeyField = document.getElementById('foreignKeyField');
+            const principalKeyField = document.getElementById('principalKeyField');
+            const joinTableField = document.getElementById('joinTableField');
+
+            if (type === 'ManyToMany') {
+                foreignKeyField.style.display = 'none';
+                principalKeyField.style.display = 'none';
+                joinTableField.style.display = 'block';
+            } else {
+                foreignKeyField.style.display = 'block';
+                principalKeyField.style.display = 'block';
+                joinTableField.style.display = 'none';
+            }
+
+            // Auto-suggest navigation property names
+            updateRelationshipFields();
+        }
+
+        function updateRelationshipFields() {
+            const relatedEntityId = document.getElementById('relatedEntity').value;
+            if (!relatedEntityId || !selectedRelationshipType) return;
+
+            const entityList = currentRelationshipIsIncremental ? incrementalEntities : entities;
+            const currentEntity = entityList.find(e => e.id === currentRelationshipEntity);
+            const relatedEntity = entityList.find(e => e.id === parseInt(relatedEntityId));
+            if (!currentEntity || !relatedEntity) return;
+
+            // Auto-suggest property names based on relationship type
+            const navProp = document.getElementById('navigationProperty');
+            const inverseNavProp = document.getElementById('inverseNavigationProperty');
+            const fkProp = document.getElementById('foreignKeyProperty');
+            const joinTable = document.getElementById('joinTableName');
+
+            switch (selectedRelationshipType) {
+                case 'OneToMany':
+                    navProp.placeholder = `${relatedEntity.name}s (Collection)`;
+                    inverseNavProp.placeholder = `${currentEntity.name} (Single)`;
+                    fkProp.value = `${currentEntity.name}Id`;
+                    break;
+                case 'ManyToOne':
+                    navProp.placeholder = `${relatedEntity.name} (Single)`;
+                    inverseNavProp.placeholder = `${currentEntity.name}s (Collection)`;
+                    fkProp.value = `${relatedEntity.name}Id`;
+                    break;
+                case 'OneToOne':
+                    navProp.placeholder = `${relatedEntity.name} (Single)`;
+                    inverseNavProp.placeholder = `${currentEntity.name} (Single)`;
+                    fkProp.value = `${relatedEntity.name}Id`;
+                    break;
+                case 'ManyToMany':
+                    navProp.placeholder = `${relatedEntity.name}s (Collection)`;
+                    inverseNavProp.placeholder = `${currentEntity.name}s (Collection)`;
+                    joinTable.value = `${currentEntity.name}${relatedEntity.name}`;
+                    break;
+            }
+        }
+
+        function saveRelationship() {
+            if (!currentRelationshipEntity || !selectedRelationshipType) {
+                alert('Please select a relationship type');
+                return;
+            }
+
+            const relatedEntityId = document.getElementById('relatedEntity').value;
+            if (!relatedEntityId) {
+                alert('Please select a related entity');
+                return;
+            }
+
+            const entityList = currentRelationshipIsIncremental ? incrementalEntities : entities;
+            const entity = entityList.find(e => e.id === currentRelationshipEntity);
+            const relatedEntity = entityList.find(e => e.id === parseInt(relatedEntityId));
+            if (!entity || !relatedEntity) return;
+
+            // Initialize relationships array
+            if (!entity.relationships) {
+                entity.relationships = [];
+            }
+
+            // Create relationship object
+            const relationship = {
+                type: selectedRelationshipType,
+                relatedEntity: relatedEntity.name,
+                relatedEntityId: relatedEntity.id,
+                foreignKeyProperty: document.getElementById('foreignKeyProperty').value,
+                principalKey: document.getElementById('principalKey').value,
+                navigationProperty: document.getElementById('navigationProperty').value,
+                inverseNavigationProperty: document.getElementById('inverseNavigationProperty').value,
+                onDeleteBehavior: document.getElementById('onDeleteBehavior').value,
+                joinTableName: document.getElementById('joinTableName').value
+            };
+
+            // Add relationship
+            entity.relationships.push(relationship);
+
+            // Close modal
+            closeRelationshipModal();
+
+            // Show success message
+            console.log('Relationship created:', relationship);
+            alert(`Relationship created: ${entity.name} ${selectedRelationshipType} ${relatedEntity.name}`);
+
+            // Re-render to show relationship indicator
+            if (currentRelationshipIsIncremental) {
+                renderIncrementalEntities();
+            } else {
+                renderEntities();
+            }
+        }
+
+        function closeRelationshipModal() {
+            document.getElementById('relationshipModal').classList.remove('open');
+            document.getElementById('relationshipOverlay').classList.remove('open');
+            currentRelationshipEntity = null;
+            selectedRelationshipType = null;
+            currentRelationshipIsIncremental = false;
         }
 
         // Load Version Information and Build About Page
