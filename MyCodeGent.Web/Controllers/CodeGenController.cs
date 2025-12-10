@@ -66,6 +66,12 @@ public class CodeGenController : ControllerBase
             var webConfig = request.Config ?? new GenerationConfig();
             var sessionId = Guid.NewGuid().ToString();
             webConfig.OutputPath = Path.Combine(Path.GetTempPath(), "MyCodeGent", sessionId);
+            
+            // Store project name for later use in download
+            var projectName = webConfig.RootNamespace ?? "GeneratedProject";
+            var metadataPath = Path.Combine(webConfig.OutputPath, ".metadata");
+            Directory.CreateDirectory(webConfig.OutputPath);
+            await System.IO.File.WriteAllTextAsync(metadataPath, projectName);
 
             _logger.LogInformation("Starting code generation for {Count} entities. Session: {SessionId}, OutputPath: {OutputPath}", 
                 request.Entities.Count, sessionId, webConfig.OutputPath);
@@ -177,8 +183,18 @@ public class CodeGenController : ControllerBase
             {
                 return NotFound(new { error = "Session not found or expired" });
             }
+            
+            // Read project name from metadata
+            var metadataPath = Path.Combine(outputPath, ".metadata");
+            var projectName = "GeneratedProject";
+            if (System.IO.File.Exists(metadataPath))
+            {
+                projectName = await System.IO.File.ReadAllTextAsync(metadataPath);
+                // Delete metadata file so it's not included in ZIP
+                System.IO.File.Delete(metadataPath);
+            }
 
-            var zipPath = Path.Combine(Path.GetTempPath(), $"MyCodeGent_{sessionId}.zip");
+            var zipPath = Path.Combine(Path.GetTempPath(), $"{projectName}_{sessionId}.zip");
             
             if (System.IO.File.Exists(zipPath))
             {
@@ -192,7 +208,7 @@ public class CodeGenController : ControllerBase
             // Cleanup
             System.IO.File.Delete(zipPath);
 
-            return File(bytes, "application/zip", $"generated-code-{sessionId}.zip");
+            return File(bytes, "application/zip", $"{projectName}.zip");
         }
         catch (Exception ex)
         {

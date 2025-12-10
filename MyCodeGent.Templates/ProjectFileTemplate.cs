@@ -81,8 +81,8 @@ public static class ProjectFileTemplate
         // AutoMapper
         if (config.UseAutoMapper)
         {
-            sb.AppendLine("    <PackageReference Include=\"AutoMapper\" Version=\"13.0.1\" />");
-            sb.AppendLine("    <PackageReference Include=\"AutoMapper.Extensions.Microsoft.DependencyInjection\" Version=\"13.0.1\" />");
+            sb.AppendLine("    <PackageReference Include=\"AutoMapper\" Version=\"12.0.1\" />");
+            sb.AppendLine("    <PackageReference Include=\"AutoMapper.Extensions.Microsoft.DependencyInjection\" Version=\"12.0.1\" />");
         }
         
         // Authentication
@@ -99,11 +99,11 @@ public static class ProjectFileTemplate
         // Logging
         if (config.LoggingProvider == LoggingProvider.Serilog)
         {
-            sb.AppendLine("    <PackageReference Include=\"Serilog.AspNetCore\" Version=\"8.0.3\" />");
-            sb.AppendLine("    <PackageReference Include=\"Serilog.Sinks.Console\" Version=\"6.0.0\" />");
-            sb.AppendLine("    <PackageReference Include=\"Serilog.Sinks.File\" Version=\"6.0.0\" />");
-            sb.AppendLine("    <PackageReference Include=\"Serilog.Enrichers.Environment\" Version=\"3.1.0\" />");
-            sb.AppendLine("    <PackageReference Include=\"Serilog.Enrichers.Thread\" Version=\"4.0.0\" />");
+            sb.AppendLine("    <PackageReference Include=\"Serilog.AspNetCore\" Version=\"8.0.2\" />");
+            sb.AppendLine("    <PackageReference Include=\"Serilog.Sinks.Console\" Version=\"5.0.1\" />");
+            sb.AppendLine("    <PackageReference Include=\"Serilog.Sinks.File\" Version=\"5.0.0\" />");
+            sb.AppendLine("    <PackageReference Include=\"Serilog.Enrichers.Environment\" Version=\"3.0.1\" />");
+            sb.AppendLine("    <PackageReference Include=\"Serilog.Enrichers.Thread\" Version=\"3.1.0\" />");
         }
         
         // Caching

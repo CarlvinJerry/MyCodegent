@@ -27,39 +27,33 @@ public static class SolutionTemplate
         var srcFolderGuid = Guid.NewGuid().ToString().ToUpper();
         var testsFolderGuid = Guid.NewGuid().ToString().ToUpper();
         
-        // Add projects
+        // Add projects (matching actual flat folder structure)
         if (config.GenerateDomain)
         {
-            sb.AppendLine($"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{config.RootNamespace}.Domain\", \"{config.RootNamespace}.Domain\\{config.RootNamespace}.Domain.csproj\", \"{{{domainGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Domain\", \"Domain\\{config.RootNamespace}.Domain.csproj\", \"{{{domainGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
         if (config.GenerateApplication)
         {
-            sb.AppendLine($"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{config.RootNamespace}.Application\", \"{config.RootNamespace}.Application\\{config.RootNamespace}.Application.csproj\", \"{{{applicationGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Application\", \"Application\\{config.RootNamespace}.Application.csproj\", \"{{{applicationGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
         if (config.GenerateInfrastructure)
         {
-            sb.AppendLine($"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{config.RootNamespace}.Infrastructure\", \"{config.RootNamespace}.Infrastructure\\{config.RootNamespace}.Infrastructure.csproj\", \"{{{infrastructureGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Infrastructure\", \"Infrastructure\\{config.RootNamespace}.Infrastructure.csproj\", \"{{{infrastructureGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
         if (config.GenerateApi)
         {
-            sb.AppendLine($"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{config.RootNamespace}.Api\", \"{config.RootNamespace}.Api\\{config.RootNamespace}.Api.csproj\", \"{{{apiGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Api\", \"Api\\{config.RootNamespace}.Api.csproj\", \"{{{apiGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
         // Add test project
-        sb.AppendLine($"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{config.RootNamespace}.Application.Tests\", \"Tests\\{config.RootNamespace}.Application.Tests\\{config.RootNamespace}.Application.Tests.csproj\", \"{{{testsGuid}}}\"");
-        sb.AppendLine("EndProject");
-        
-        // Solution folders
-        sb.AppendLine($"Project(\"{{2150E333-8FDC-42A3-9474-1A3956D46DE8}}\") = \"src\", \"src\", \"{{{srcFolderGuid}}}\"");
-        sb.AppendLine("EndProject");
-        sb.AppendLine($"Project(\"{{2150E333-8FDC-42A3-9474-1A3956D46DE8}}\") = \"tests\", \"tests\", \"{{{testsFolderGuid}}}\"");
+        sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Application.Tests\", \"Tests\\Application.Tests\\{config.RootNamespace}.Application.Tests.csproj\", \"{{{testsGuid}}}\"");
         sb.AppendLine("EndProject");
         
         // Global section
@@ -110,25 +104,6 @@ public static class SolutionTemplate
         sb.AppendLine($"\t\t{{{testsGuid}}}.Debug|Any CPU.Build.0 = Debug|Any CPU");
         sb.AppendLine($"\t\t{{{testsGuid}}}.Release|Any CPU.ActiveCfg = Release|Any CPU");
         sb.AppendLine($"\t\t{{{testsGuid}}}.Release|Any CPU.Build.0 = Release|Any CPU");
-        
-        sb.AppendLine("\tEndGlobalSection");
-        
-        // Nested projects (organize projects into folders)
-        sb.AppendLine("\tGlobalSection(NestedProjects) = preSolution");
-        
-        if (config.GenerateDomain)
-            sb.AppendLine($"\t\t{{{domainGuid}}} = {{{srcFolderGuid}}}");
-        
-        if (config.GenerateApplication)
-            sb.AppendLine($"\t\t{{{applicationGuid}}} = {{{srcFolderGuid}}}");
-        
-        if (config.GenerateInfrastructure)
-            sb.AppendLine($"\t\t{{{infrastructureGuid}}} = {{{srcFolderGuid}}}");
-        
-        if (config.GenerateApi)
-            sb.AppendLine($"\t\t{{{apiGuid}}} = {{{srcFolderGuid}}}");
-        
-        sb.AppendLine($"\t\t{{{testsGuid}}} = {{{testsFolderGuid}}}");
         
         sb.AppendLine("\tEndGlobalSection");
         
