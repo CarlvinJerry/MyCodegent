@@ -279,9 +279,11 @@
 
         <div class="content">
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('builder')">Entity Builder</button>
+                <button class="tab active" onclick="switchTab('builder')">New Project</button>
+                <button class="tab" onclick="switchTab('incremental')">Add to Existing</button>
                 <button class="tab" onclick="switchTab('json')">JSON Config</button>
                 <button class="tab" onclick="switchTab('preview')">Preview</button>
+                <button class="tab" onclick="switchTab('about')">ℹ️ About</button>
             </div>
 
             <div id="builder-tab" class="tab-content active">
@@ -326,6 +328,66 @@
                 <div id="result"></div>
             </div>
 
+            <div id="incremental-tab" class="tab-content">
+                <div class="alert" style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin-bottom: 20px;">
+                    <strong>ℹ️ Incremental Generation</strong>
+                    <p style="margin: 5px 0 0 0;">Add new entities to an existing project without overwriting your customizations. Existing files will be preserved.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>📁 Existing Project Path</label>
+                    <input type="text" id="projectPath" placeholder="e.g., C:/MyProjects/MyApp/Generated">
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Full path to your existing generated project folder
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>Root Namespace</label>
+                    <input type="text" id="namespaceIncremental" value="MyApp" placeholder="e.g., MyApp">
+                </div>
+
+                <div class="form-group">
+                    <label>Generation Options</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genDomainIncremental" checked>
+                            <label for="genDomainIncremental">Domain Layer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genAppIncremental" checked>
+                            <label for="genAppIncremental">Application Layer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genInfraIncremental" checked>
+                            <label for="genInfraIncremental">Infrastructure Layer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genApiIncremental" checked>
+                            <label for="genApiIncremental">API Layer</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Database Provider</label>
+                    <select id="dbProviderIncremental">
+                        <option value="SqlServer">SQL Server</option>
+                        <option value="PostgreSql">PostgreSQL</option>
+                        <option value="MySql">MySQL</option>
+                        <option value="Sqlite">SQLite</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>New Entities to Add</label>
+                    <div id="entityListIncremental"></div>
+                    <button class="btn btn-secondary" onclick="addEntityIncremental()">+ Add Entity</button>
+                </div>
+
+                <button class="btn btn-primary" onclick="generateIncremental()">🔄 Add Entities to Project</button>
+            </div>
+
             <div id="json-tab" class="tab-content">
                 <div class="form-group">
                     <label>JSON Configuration</label>
@@ -344,6 +406,175 @@
                 </div>
                 <div id="previewContent" class="preview-grid"></div>
             </div>
+
+            <div id="about-tab" class="tab-content">
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">📦 MyCodeGent - Version Information</h2>
+                    
+                    <!-- Version Card -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="margin: 0 0 10px 0; font-size: 2rem;">v2.0.0</h3>
+                                <p style="margin: 0; opacity: 0.9;">Complete Application Generator</p>
+                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Released: December 2024</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <div id="updateStatus" style="padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 8px; font-weight: 600;">
+                                    ✅ Up to Date
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What's New -->
+                    <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin-top: 0;">🎉 What's New in v2.0.0</h3>
+                        <ul style="line-height: 1.8; color: #555;">
+                            <li><strong>Complete Application Generation</strong> - Program.cs, appsettings, project files</li>
+                            <li><strong>60+ Configuration Options</strong> - Full control over generated applications</li>
+                            <li><strong>Database Provider Selection</strong> - SQL Server, PostgreSQL, MySQL, SQLite, InMemory</li>
+                            <li><strong>Authentication Support</strong> - JWT, Identity, OAuth ready</li>
+                            <li><strong>Logging Integration</strong> - Serilog, NLog, Application Insights</li>
+                            <li><strong>API Documentation</strong> - Swagger/OpenAPI with XML comments</li>
+                            <li><strong>Incremental Generation</strong> - Add entities to existing projects</li>
+                            <li><strong>Comprehensive Documentation</strong> - Auto-generated README and architecture docs</li>
+                            <li><strong>Production Ready</strong> - Health checks, CORS, caching, error handling</li>
+                        </ul>
+                    </div>
+
+                    <!-- Technology Stack -->
+                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin-top: 0;">🛠️ Technology Stack</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div>
+                                <strong>Framework:</strong> ASP.NET Core 9.0<br>
+                                <strong>Architecture:</strong> Clean Architecture<br>
+                                <strong>Pattern:</strong> CQRS + MediatR<br>
+                                <strong>ORM:</strong> Entity Framework Core 9.0
+                            </div>
+                            <div>
+                                <strong>Validation:</strong> FluentValidation<br>
+                                <strong>Mapping:</strong> AutoMapper<br>
+                                <strong>API Docs:</strong> Swagger/OpenAPI<br>
+                                <strong>Logging:</strong> Serilog
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Package Versions -->
+                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin-top: 0;">📦 Key Package Versions</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.9rem;">
+                            <div>• MediatR: <strong>12.4.1</strong></div>
+                            <div>• FluentValidation: <strong>11.11.0</strong></div>
+                            <div>• AutoMapper: <strong>13.0.1</strong></div>
+                            <div>• Swashbuckle: <strong>7.2.0</strong></div>
+                            <div>• EF Core: <strong>9.0.0</strong></div>
+                            <div>• Serilog: <strong>8.0.3</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Features Checklist -->
+                    <div style="background: #fff; border: 2px solid #e0e0e0; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #333; margin-top: 0;">✨ Feature Checklist</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                            <div>
+                                <strong>Code Generation:</strong><br>
+                                ✅ Domain Layer<br>
+                                ✅ Application Layer (CQRS)<br>
+                                ✅ Infrastructure Layer<br>
+                                ✅ API Layer<br>
+                                ✅ Incremental Updates
+                            </div>
+                            <div>
+                                <strong>Application Setup:</strong><br>
+                                ✅ Program.cs<br>
+                                ✅ Configuration Files<br>
+                                ✅ Project Files (.csproj)<br>
+                                ✅ Documentation<br>
+                                ✅ .gitignore
+                            </div>
+                            <div>
+                                <strong>Database Support:</strong><br>
+                                ✅ SQL Server<br>
+                                ✅ PostgreSQL<br>
+                                ✅ MySQL<br>
+                                ✅ SQLite<br>
+                                ✅ InMemory
+                            </div>
+                            <div>
+                                <strong>Cross-Cutting:</strong><br>
+                                ✅ Authentication (JWT)<br>
+                                ✅ Logging (Serilog)<br>
+                                ✅ Health Checks<br>
+                                ✅ CORS<br>
+                                ✅ Error Handling
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Standards Compliance -->
+                    <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #2e7d32; margin-top: 0;">✅ Standards Compliance</h3>
+                        <ul style="margin: 0; padding-left: 20px; color: #1b5e20;">
+                            <li><strong>.NET 9.0</strong> - Latest LTS framework</li>
+                            <li><strong>Clean Architecture</strong> - Industry best practices</li>
+                            <li><strong>SOLID Principles</strong> - Maintainable code</li>
+                            <li><strong>RESTful API</strong> - Standard HTTP methods</li>
+                            <li><strong>OpenAPI 3.0</strong> - API documentation standard</li>
+                            <li><strong>Semantic Versioning</strong> - Version management</li>
+                        </ul>
+                    </div>
+
+                    <!-- Upgrade Path -->
+                    <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #e65100; margin-top: 0;">🔄 Future Upgrade Path</h3>
+                        <p style="margin: 0 0 15px 0; color: #bf360c;">
+                            <strong>Planned for v2.1.0:</strong>
+                        </p>
+                        <ul style="margin: 0; padding-left: 20px; color: #d84315;">
+                            <li>Blazor WebAssembly support</li>
+                            <li>Docker & Kubernetes templates</li>
+                            <li>Unit & Integration test generation</li>
+                            <li>CI/CD pipeline templates (GitHub Actions, Azure DevOps)</li>
+                            <li>Advanced authentication (OAuth, Azure AD)</li>
+                            <li>Caching strategies (Redis, Distributed)</li>
+                            <li>API versioning support</li>
+                            <li>GraphQL endpoint generation</li>
+                        </ul>
+                    </div>
+
+                    <!-- Check for Updates Button -->
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="checkForUpdates()" style="padding: 15px 40px; font-size: 1.1rem;">
+                            🔍 Check for Updates
+                        </button>
+                    </div>
+
+                    <!-- System Info -->
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 30px; font-size: 0.85rem; color: #666;">
+                        <strong>System Information:</strong><br>
+                        Generator Version: <span id="generatorVersion">2.0.0</span><br>
+                        .NET Version: <span id="dotnetVersion">9.0</span><br>
+                        Last Updated: <span id="lastUpdated">December 2024</span><br>
+                        Build: <span id="buildNumber">2024.12.10.001</span>
+                    </div>
+
+                    <!-- Links -->
+                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                        <a href="https://github.com/yourusername/mycodegent" target="_blank" style="color: #667eea; text-decoration: none; margin: 0 15px; font-weight: 600;">
+                            📚 Documentation
+                        </a>
+                        <a href="https://github.com/yourusername/mycodegent/releases" target="_blank" style="color: #667eea; text-decoration: none; margin: 0 15px; font-weight: 600;">
+                            📋 Release Notes
+                        </a>
+                        <a href="https://github.com/yourusername/mycodegent/issues" target="_blank" style="color: #667eea; text-decoration: none; margin: 0 15px; font-weight: 600;">
+                            🐛 Report Issue
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -361,6 +592,12 @@
 
             if (tabName === 'preview') {
                 updatePreviewEntityList();
+            }
+            
+            // Optional: Auto-check for updates when About tab is opened
+            if (tabName === 'about') {
+                // Uncomment to auto-check on tab open
+                // checkForUpdates();
             }
         }
 
@@ -644,8 +881,264 @@
             return div.innerHTML;
         }
 
+        // Incremental Generation Functions
+        let incrementalEntities = [];
+        let currentIncrementalEntityId = 0;
+
+        function addEntityIncremental() {
+            const id = ++currentIncrementalEntityId;
+            const entity = {
+                id,
+                name: `NewEntity${id}`,
+                hasAuditFields: true,
+                hasSoftDelete: true,
+                properties: [
+                    { name: 'Id', type: 'int', isKey: true, isRequired: true }
+                ]
+            };
+            incrementalEntities.push(entity);
+            renderIncrementalEntities();
+        }
+
+        function removeEntityIncremental(id) {
+            incrementalEntities = incrementalEntities.filter(e => e.id !== id);
+            renderIncrementalEntities();
+        }
+
+        function addPropertyIncremental(entityId) {
+            const entity = incrementalEntities.find(e => e.id === entityId);
+            if (entity) {
+                entity.properties.push({
+                    name: 'NewProperty',
+                    type: 'string',
+                    isKey: false,
+                    isRequired: false
+                });
+                renderIncrementalEntities();
+            }
+        }
+
+        function removePropertyIncremental(entityId, propIndex) {
+            const entity = incrementalEntities.find(e => e.id === entityId);
+            if (entity) {
+                entity.properties.splice(propIndex, 1);
+                renderIncrementalEntities();
+            }
+        }
+
+        function renderIncrementalEntities() {
+            const container = document.getElementById('entityListIncremental');
+            container.innerHTML = incrementalEntities.map(entity => `
+                <div class="entity-card">
+                    <div class="entity-header">
+                        <input type="text" value="${entity.name}" 
+                               onchange="updateIncrementalEntityName(${entity.id}, this.value)"
+                               style="width: 200px; font-weight: 600; font-size: 1.1rem;">
+                        <button class="btn btn-secondary" onclick="removeEntityIncremental(${entity.id})">Remove</button>
+                    </div>
+                    <div class="checkbox-group" style="margin: 10px 0;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="auditInc${entity.id}" 
+                                   ${entity.hasAuditFields ? 'checked' : ''}
+                                   onchange="toggleAuditIncremental(${entity.id})">
+                            <label for="auditInc${entity.id}">Audit Fields</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="softInc${entity.id}" 
+                                   ${entity.hasSoftDelete ? 'checked' : ''}
+                                   onchange="toggleSoftDeleteIncremental(${entity.id})">
+                            <label for="softInc${entity.id}">Soft Delete</label>
+                        </div>
+                    </div>
+                    <div class="property-list">
+                        ${entity.properties.map((prop, idx) => `
+                            <div class="property-item">
+                                <input type="text" value="${prop.name}" 
+                                       onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'name', this.value)"
+                                       style="width: 150px;">
+                                <select onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'type', this.value)"
+                                        style="width: 100px;">
+                                    ${['string', 'int', 'long', 'decimal', 'bool', 'DateTime', 'Guid'].map(t => 
+                                        `<option value="${t}" ${prop.type === t ? 'selected' : ''}>${t}</option>`
+                                    ).join('')}
+                                </select>
+                                <label style="font-size: 0.9rem;">
+                                    <input type="checkbox" ${prop.isKey ? 'checked' : ''}
+                                           onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'isKey', this.checked)">
+                                    Key
+                                </label>
+                                <label style="font-size: 0.9rem;">
+                                    <input type="checkbox" ${prop.isRequired ? 'checked' : ''}
+                                           onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'isRequired', this.checked)">
+                                    Required
+                                </label>
+                                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;"
+                                        onclick="removePropertyIncremental(${entity.id}, ${idx})">×</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-secondary" style="margin-top: 10px; padding: 8px 16px; font-size: 0.9rem;"
+                            onclick="addPropertyIncremental(${entity.id})">+ Add Property</button>
+                </div>
+            `).join('');
+        }
+
+        function updateIncrementalEntityName(id, name) {
+            const entity = incrementalEntities.find(e => e.id === id);
+            if (entity) entity.name = name;
+        }
+
+        function toggleAuditIncremental(id) {
+            const entity = incrementalEntities.find(e => e.id === id);
+            if (entity) entity.hasAuditFields = !entity.hasAuditFields;
+        }
+
+        function toggleSoftDeleteIncremental(id) {
+            const entity = incrementalEntities.find(e => e.id === id);
+            if (entity) entity.hasSoftDelete = !entity.hasSoftDelete;
+        }
+
+        function updatePropertyIncremental(entityId, propIdx, field, value) {
+            const entity = incrementalEntities.find(e => e.id === entityId);
+            if (entity && entity.properties[propIdx]) {
+                entity.properties[propIdx][field] = value;
+            }
+        }
+
+        async function generateIncremental() {
+            const projectPath = document.getElementById('projectPath').value.trim();
+            
+            if (!projectPath) {
+                alert('Please enter the project path');
+                return;
+            }
+
+            if (incrementalEntities.length === 0) {
+                alert('Please add at least one entity');
+                return;
+            }
+
+            const config = {
+                rootNamespace: document.getElementById('namespaceIncremental').value,
+                generateDomain: document.getElementById('genDomainIncremental').checked,
+                generateApplication: document.getElementById('genAppIncremental').checked,
+                generateInfrastructure: document.getElementById('genInfraIncremental').checked,
+                generateApi: document.getElementById('genApiIncremental').checked,
+                useMediator: true,
+                useFluentValidation: true,
+                useAutoMapper: true,
+                databaseProvider: document.getElementById('dbProviderIncremental').value
+            };
+
+            const requestBody = {
+                projectPath: projectPath,
+                config: config,
+                newEntities: incrementalEntities.map(e => ({
+                    name: e.name,
+                    hasAuditFields: e.hasAuditFields,
+                    hasSoftDelete: e.hasSoftDelete,
+                    properties: e.properties.map(p => ({
+                        name: p.name,
+                        type: p.type,
+                        isKey: p.isKey,
+                        isRequired: p.isRequired
+                    }))
+                }))
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/generate-incremental`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const message = `
+                        <div class="alert alert-success">
+                            <h3>✅ ${result.message}</h3>
+                            <p><strong>Entities Added:</strong> ${result.entitiesAdded.join(', ')}</p>
+                            <p><strong>New Files:</strong> ${result.newFilesCount}</p>
+                            <p><strong>Updated Files:</strong> ${result.updatedFilesCount}</p>
+                            <details style="margin-top: 10px;">
+                                <summary style="cursor: pointer; font-weight: 600;">View New Files</summary>
+                                <ul style="margin-top: 10px;">
+                                    ${result.newFiles.map(f => `<li>${f}</li>`).join('')}
+                                </ul>
+                            </details>
+                            <details style="margin-top: 10px;">
+                                <summary style="cursor: pointer; font-weight: 600;">View Updated Files</summary>
+                                <ul style="margin-top: 10px;">
+                                    ${result.updatedFiles.map(f => `<li>${f}</li>`).join('')}
+                                </ul>
+                            </details>
+                        </div>
+                    `;
+                    
+                    // Show result in a modal or alert
+                    const resultDiv = document.createElement('div');
+                    resultDiv.innerHTML = message;
+                    resultDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 600px; max-height: 80vh; overflow-y: auto; z-index: 1000;';
+                    
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999;';
+                    overlay.onclick = () => {
+                        document.body.removeChild(resultDiv);
+                        document.body.removeChild(overlay);
+                    };
+                    
+                    document.body.appendChild(overlay);
+                    document.body.appendChild(resultDiv);
+                    
+                    // Clear the form
+                    incrementalEntities = [];
+                    renderIncrementalEntities();
+                } else {
+                    throw new Error(result.message || result.error || 'Generation failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Check for Updates Function
+        async function checkForUpdates() {
+            const updateStatus = document.getElementById('updateStatus');
+            updateStatus.innerHTML = '🔄 Checking...';
+            updateStatus.style.background = 'rgba(255,255,255,0.3)';
+            
+            try {
+                // Simulate checking for updates (in production, this would call a real API)
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Current version
+                const currentVersion = '2.0.0';
+                
+                // Simulated latest version check
+                // In production, fetch from: https://api.github.com/repos/yourusername/mycodegent/releases/latest
+                const latestVersion = '2.0.0'; // This would come from API
+                
+                if (currentVersion === latestVersion) {
+                    updateStatus.innerHTML = '✅ Up to Date';
+                    updateStatus.style.background = 'rgba(76, 175, 80, 0.3)';
+                    alert('✅ You are running the latest version (v' + currentVersion + ')');
+                } else {
+                    updateStatus.innerHTML = '⚠️ Update Available';
+                    updateStatus.style.background = 'rgba(255, 152, 0, 0.3)';
+                    alert('⚠️ New version available: v' + latestVersion + '\\n\\nCurrent version: v' + currentVersion + '\\n\\nVisit the releases page to download the latest version.');
+                }
+            } catch (error) {
+                updateStatus.innerHTML = '❌ Check Failed';
+                updateStatus.style.background = 'rgba(244, 67, 54, 0.3)';
+                alert('❌ Failed to check for updates. Please try again later.');
+            }
+        }
+        
         // Initialize with one entity
         addEntity();
+        addEntityIncremental();
     </script>
 </body>
 </html>

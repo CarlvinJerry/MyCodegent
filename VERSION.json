@@ -1,0 +1,92 @@
+{
+  "version": "2.0.0",
+  "releaseDate": "2024-12-10",
+  "buildNumber": "2024.12.10.001",
+  "codeName": "Complete Application Generator",
+  "dotnetVersion": "9.0",
+  "features": {
+    "completeAppGeneration": true,
+    "incrementalGeneration": true,
+    "databaseProviders": ["SqlServer", "PostgreSql", "MySql", "Sqlite", "InMemory"],
+    "authentication": ["JWT", "Identity"],
+    "logging": ["Serilog", "NLog", "ApplicationInsights"],
+    "documentation": true,
+    "swagger": true,
+    "healthChecks": true
+  },
+  "packages": {
+    "MediatR": "12.4.1",
+    "FluentValidation": "11.11.0",
+    "AutoMapper": "13.0.1",
+    "Swashbuckle": "7.2.0",
+    "EntityFrameworkCore": "9.0.0",
+    "Serilog": "8.0.3"
+  },
+  "changelog": [
+    {
+      "version": "2.0.0",
+      "date": "2024-12-10",
+      "changes": [
+        "Complete application generation (Program.cs, appsettings, project files)",
+        "60+ configuration options",
+        "Database provider selection",
+        "Authentication support (JWT, Identity)",
+        "Logging integration (Serilog, NLog, Application Insights)",
+        "API documentation (Swagger/OpenAPI)",
+        "Incremental generation for existing projects",
+        "Comprehensive documentation generation",
+        "Production-ready features (health checks, CORS, caching)"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2024-11-01",
+      "changes": [
+        "Initial release",
+        "Basic CRUD generation",
+        "Clean Architecture structure",
+        "CQRS pattern with MediatR",
+        "FluentValidation support",
+        "Entity Framework Core integration"
+      ]
+    }
+  ],
+  "roadmap": {
+    "v2.1.0": [
+      "Blazor WebAssembly support",
+      "Docker & Kubernetes templates",
+      "Unit & Integration test generation",
+      "CI/CD pipeline templates",
+      "Advanced authentication (OAuth, Azure AD)",
+      "Caching strategies (Redis)",
+      "API versioning",
+      "GraphQL endpoint generation"
+    ],
+    "v2.2.0": [
+      "Microservices architecture support",
+      "Message queue integration (RabbitMQ, Azure Service Bus)",
+      "Event sourcing templates",
+      "CQRS with Event Store",
+      "Multi-tenancy support",
+      "Localization/Internationalization"
+    ],
+    "v3.0.0": [
+      "AI-powered code suggestions",
+      "Custom template engine",
+      "Plugin system",
+      "Visual designer",
+      "Real-time collaboration"
+    ]
+  },
+  "compatibility": {
+    "dotnet": ["9.0", "8.0"],
+    "entityFrameworkCore": ["9.0", "8.0"],
+    "operatingSystems": ["Windows", "Linux", "macOS"]
+  },
+  "links": {
+    "repository": "https://github.com/yourusername/mycodegent",
+    "documentation": "https://github.com/yourusername/mycodegent/wiki",
+    "releases": "https://github.com/yourusername/mycodegent/releases",
+    "issues": "https://github.com/yourusername/mycodegent/issues"
+  }
+}

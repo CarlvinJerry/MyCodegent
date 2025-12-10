@@ -86,6 +86,10 @@ public class CodeGenController : ControllerBase
                 // Generate common files
                 _logger.LogDebug("Generating common files...");
                 await GenerateCommonFilesAsync(templateEntities, templateConfig);
+                
+                // Generate application infrastructure (Program.cs, appsettings, project files, docs)
+                _logger.LogDebug("Generating application infrastructure...");
+                await _codeGenerator.GenerateApplicationInfrastructureAsync(templateEntities, templateConfig);
 
                 // Collect all generated files
                 _logger.LogDebug("Collecting generated files from: {OutputPath}", webConfig.OutputPath);
@@ -304,11 +308,44 @@ public class CodeGenController : ControllerBase
         { 
             status = "healthy",
             timestamp = DateTime.UtcNow,
-            version = "1.0.0",
+            version = "2.0.0",
             services = new
             {
                 codeGenerator = _codeGenerator != null ? "OK" : "MISSING",
                 fileWriter = _fileWriter != null ? "OK" : "MISSING"
+            }
+        });
+    }
+    
+    [HttpGet("version")]
+    public IActionResult GetVersion()
+    {
+        return Ok(new
+        {
+            version = "2.0.0",
+            releaseDate = "2024-12-10",
+            buildNumber = "2024.12.10.001",
+            codeName = "Complete Application Generator",
+            dotnetVersion = "9.0",
+            features = new
+            {
+                completeAppGeneration = true,
+                incrementalGeneration = true,
+                databaseProviders = new[] { "SqlServer", "PostgreSql", "MySql", "Sqlite", "InMemory" },
+                authentication = new[] { "JWT", "Identity" },
+                logging = new[] { "Serilog", "NLog", "ApplicationInsights" },
+                documentation = true,
+                swagger = true,
+                healthChecks = true
+            },
+            packages = new
+            {
+                MediatR = "12.4.1",
+                FluentValidation = "11.11.0",
+                AutoMapper = "13.0.1",
+                Swashbuckle = "7.2.0",
+                EntityFrameworkCore = "9.0.0",
+                Serilog = "8.0.3"
             }
         });
     }

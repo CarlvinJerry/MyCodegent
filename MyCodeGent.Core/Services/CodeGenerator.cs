@@ -164,4 +164,193 @@ public class CodeGenerator : ICodeGenerator
         
         Console.WriteLine($"  ✓ Generated API Controller");
     }
+    
+    /// <summary>
+    /// Generates complete application infrastructure files (Program.cs, appsettings, project files, docs)
+    /// </summary>
+    public async Task GenerateApplicationInfrastructureAsync(List<EntityModel> entities, GenerationConfig config)
+    {
+        Console.WriteLine("Generating application infrastructure...");
+        
+        // Generate Program.cs
+        if (config.GenerateProgramFile)
+        {
+            var programCode = ProgramTemplate.Generate(config, entities);
+            var programFile = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api", "Program.cs");
+            await _fileWriter.WriteFileAsync(programFile, programCode);
+            Console.WriteLine("  ✓ Generated Program.cs");
+        }
+        
+        // Generate appsettings files
+        if (config.GenerateAppSettings)
+        {
+            var apiPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api");
+            
+            var appSettings = AppSettingsTemplate.GenerateAppSettings(config);
+            await _fileWriter.WriteFileAsync(Path.Combine(apiPath, "appsettings.json"), appSettings);
+            Console.WriteLine("  ✓ Generated appsettings.json");
+            
+            var appSettingsDev = AppSettingsTemplate.GenerateAppSettingsDevelopment(config);
+            await _fileWriter.WriteFileAsync(Path.Combine(apiPath, "appsettings.Development.json"), appSettingsDev);
+            Console.WriteLine("  ✓ Generated appsettings.Development.json");
+            
+            var appSettingsProd = AppSettingsTemplate.GenerateAppSettingsProduction(config);
+            await _fileWriter.WriteFileAsync(Path.Combine(apiPath, "appsettings.Production.json"), appSettingsProd);
+            Console.WriteLine("  ✓ Generated appsettings.Production.json");
+        }
+        
+        // Generate project files
+        if (config.GenerateProjectFiles)
+        {
+            // API Project
+            var apiProject = ProjectFileTemplate.GenerateApiProject(config);
+            await _fileWriter.WriteFileAsync(
+                Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api", $"{config.RootNamespace}.Api.csproj"),
+                apiProject);
+            Console.WriteLine($"  ✓ Generated {config.RootNamespace}.Api.csproj");
+            
+            // Application Project
+            var appProject = ProjectFileTemplate.GenerateApplicationProject(config);
+            await _fileWriter.WriteFileAsync(
+                Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", $"{config.RootNamespace}.Application.csproj"),
+                appProject);
+            Console.WriteLine($"  ✓ Generated {config.RootNamespace}.Application.csproj");
+            
+            // Infrastructure Project
+            var infraProject = ProjectFileTemplate.GenerateInfrastructureProject(config);
+            await _fileWriter.WriteFileAsync(
+                Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", $"{config.RootNamespace}.Infrastructure.csproj"),
+                infraProject);
+            Console.WriteLine($"  ✓ Generated {config.RootNamespace}.Infrastructure.csproj");
+            
+            // Domain Project
+            var domainProject = ProjectFileTemplate.GenerateDomainProject(config);
+            await _fileWriter.WriteFileAsync(
+                Path.Combine(config.OutputPath, $"{config.RootNamespace}.Domain", $"{config.RootNamespace}.Domain.csproj"),
+                domainProject);
+            Console.WriteLine($"  ✓ Generated {config.RootNamespace}.Domain.csproj");
+        }
+        
+        // Generate documentation
+        if (config.GenerateReadme)
+        {
+            var readme = DocumentationTemplate.GenerateReadme(config, entities);
+            await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "README.md"), readme);
+            Console.WriteLine("  ✓ Generated README.md");
+        }
+        
+        if (config.GenerateArchitectureDocs)
+        {
+            var archDoc = DocumentationTemplate.GenerateArchitectureDoc(config);
+            await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "ARCHITECTURE.md"), archDoc);
+            Console.WriteLine("  ✓ Generated ARCHITECTURE.md");
+        }
+        
+        // Generate .gitignore
+        if (config.GenerateGitIgnore)
+        {
+            var gitignore = GenerateGitIgnore();
+            await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, ".gitignore"), gitignore);
+            Console.WriteLine("  ✓ Generated .gitignore");
+        }
+        
+        Console.WriteLine("✓ Application infrastructure generation completed");
+    }
+    
+    private string GenerateGitIgnore()
+    {
+        return @"## Ignore Visual Studio temporary files, build results, and
+## files generated by popular Visual Studio add-ons.
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options directory
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Database files
+*.mdf
+*.ldf
+*.ndf
+
+# Logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+";
+    }
 }

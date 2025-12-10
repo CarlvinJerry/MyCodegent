@@ -299,7 +299,7 @@ public class IncrementalCodeGenerator
         return updatedFiles;
     }
     
-    private async Task<List<EntityModel>> GetAllEntitiesAsync(string projectPath, List<EntityModel> newEntities)
+    private Task<List<EntityModel>> GetAllEntitiesAsync(string projectPath, List<EntityModel> newEntities)
     {
         var allEntities = new List<EntityModel>(newEntities);
         
@@ -322,7 +322,7 @@ public class IncrementalCodeGenerator
             }
         }
         
-        return allEntities;
+        return Task.FromResult(allEntities);
     }
 }
 
