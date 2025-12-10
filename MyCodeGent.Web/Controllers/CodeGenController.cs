@@ -91,6 +91,9 @@ public class CodeGenController : ControllerBase
                 {
                     _logger.LogInformation("Generating code for entity: {EntityName}", entity.Name);
                     await _codeGenerator.GenerateAsync(entity, templateConfig);
+                    
+                    // Generate unit tests for entity
+                    await _codeGenerator.GenerateTestsAsync(entity, templateConfig);
                 }
 
                 // Generate common files
@@ -609,6 +612,20 @@ public class CodeGenController : ControllerBase
         var swaggerConfig = MyCodeGent.Templates.SwaggerTemplate.GenerateSwaggerConfiguration(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(configPath, "SwaggerConfiguration.cs"), swaggerConfig);
         _logger.LogInformation("Generated Swagger Configuration");
+        
+        // Generate Pagination Models
+        var pagedResultCode = MyCodeGent.Templates.PaginationTemplate.GeneratePagedResult(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(modelsPath, "PagedResult.cs"), pagedResultCode);
+        
+        var pagedQueryCode = MyCodeGent.Templates.PaginationTemplate.GeneratePagedQuery(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(modelsPath, "PagedQuery.cs"), pagedQueryCode);
+        _logger.LogInformation("Generated Pagination Models");
+        
+        // Generate Test Project
+        var testProjectPath = Path.Combine(config.OutputPath, "Tests", "Application.Tests");
+        var testProject = MyCodeGent.Templates.TestTemplate.GenerateTestProject(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(testProjectPath, $"{config.RootNamespace}.Application.Tests.csproj"), testProject);
+        _logger.LogInformation("Generated Test Project");
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)

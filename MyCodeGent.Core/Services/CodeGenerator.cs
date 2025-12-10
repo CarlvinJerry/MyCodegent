@@ -148,6 +148,16 @@ public class CodeGenerator : ICodeGenerator
         await _fileWriter.WriteFileAsync(Path.Combine(getAllPath, $"GetAll{entity.Name}sQueryHandler.cs"), getAllHandler);
         
         Console.WriteLine($"  ✓ Generated GetAll Query");
+        
+        // GetAllPaged Query (with search and filtering)
+        var getAllPagedPath = Path.Combine(basePath, "Queries", $"GetAll{entity.Name}sPaged");
+        var getAllPagedQuery = PaginationTemplate.GenerateGetAllPagedQuery(entity);
+        await _fileWriter.WriteFileAsync(Path.Combine(getAllPagedPath, $"GetAll{entity.Name}sPagedQuery.cs"), getAllPagedQuery);
+        
+        var getAllPagedHandler = PaginationTemplate.GenerateGetAllPagedHandler(entity);
+        await _fileWriter.WriteFileAsync(Path.Combine(getAllPagedPath, $"GetAll{entity.Name}sPagedQueryHandler.cs"), getAllPagedHandler);
+        
+        Console.WriteLine($"  ✓ Generated GetAllPaged Query (with search & filtering)");
     }
     
     private async Task GenerateInfrastructureAsync(EntityModel entity, GenerationConfig config)
@@ -172,6 +182,25 @@ public class CodeGenerator : ICodeGenerator
         await _fileWriter.WriteFileAsync(controllerFile, controllerCode);
         
         Console.WriteLine($"  ✓ Generated API Controller");
+    }
+    
+    public async Task GenerateTestsAsync(EntityModel entity, GenerationConfig config)
+    {
+        var testsPath = Path.Combine(config.OutputPath, "Tests", "Application.Tests", $"{entity.Name}s");
+        await _fileWriter.CreateDirectoryAsync(testsPath);
+        
+        // Handler Tests
+        var handlerTests = TestTemplate.GenerateHandlerTests(entity);
+        await _fileWriter.WriteFileAsync(Path.Combine(testsPath, $"{entity.Name}HandlerTests.cs"), handlerTests);
+        
+        // Validator Tests
+        if (config.UseFluentValidation)
+        {
+            var validatorTests = TestTemplate.GenerateValidatorTests(entity);
+            await _fileWriter.WriteFileAsync(Path.Combine(testsPath, $"{entity.Name}ValidatorTests.cs"), validatorTests);
+        }
+        
+        Console.WriteLine($"  ✓ Generated Unit Tests for {entity.Name}");
     }
     
     /// <summary>
