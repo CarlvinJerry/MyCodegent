@@ -11,6 +11,13 @@ public static class EntityTemplate
         
         sb.AppendLine($"using System;");
         sb.AppendLine($"using System.ComponentModel.DataAnnotations;");
+        
+        // Add ICollection using if there are relationships
+        if (entity.Relationships != null && entity.Relationships.Any(r => r.Type == "OneToMany" || r.Type == "ManyToMany"))
+        {
+            sb.AppendLine($"using System.Collections.Generic;");
+        }
+        
         sb.AppendLine();
         sb.AppendLine($"namespace {entity.Namespace}.Domain.Entities;");
         sb.AppendLine();
@@ -56,6 +63,29 @@ public static class EntityTemplate
             sb.AppendLine("    public bool IsDeleted { get; set; }");
             sb.AppendLine("    public DateTime? DeletedAt { get; set; }");
             sb.AppendLine("    public string? DeletedBy { get; set; }");
+            sb.AppendLine();
+        }
+        
+        // Add navigation properties from relationships
+        if (entity.Relationships != null && entity.Relationships.Any())
+        {
+            sb.AppendLine("    // Navigation Properties");
+            foreach (var relationship in entity.Relationships)
+            {
+                if (!string.IsNullOrEmpty(relationship.NavigationProperty))
+                {
+                    if (relationship.Type == "OneToMany" || relationship.Type == "ManyToMany")
+                    {
+                        // Collection navigation property
+                        sb.AppendLine($"    public virtual ICollection<{relationship.RelatedEntity}>? {relationship.NavigationProperty} {{ get; set; }}");
+                    }
+                    else if (relationship.Type == "ManyToOne" || relationship.Type == "OneToOne")
+                    {
+                        // Single navigation property
+                        sb.AppendLine($"    public virtual {relationship.RelatedEntity}? {relationship.NavigationProperty} {{ get; set; }}");
+                    }
+                }
+            }
         }
         
         sb.AppendLine("}");

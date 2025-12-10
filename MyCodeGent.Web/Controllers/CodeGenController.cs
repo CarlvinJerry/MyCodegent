@@ -373,6 +373,30 @@ public class CodeGenController : ControllerBase
                     Swashbuckle = "7.2.0",
                     EntityFrameworkCore = "9.0.0",
                     Serilog = "8.0.3"
+                },
+                generatedOutput = new
+                {
+                    targetFramework = "net9.0",
+                    architecturePattern = "Clean Architecture + CQRS",
+                    layers = new[] { "Domain", "Application", "Infrastructure", "API" },
+                    includesTests = false,
+                    includesDocker = false,
+                    includesMigrations = true
+                },
+                enterpriseFeatures = new
+                {
+                    propertyConstraints = true,
+                    relationships = true,
+                    businessKeys = true,
+                    visualDiagram = true,
+                    incrementalUpdates = true
+                },
+                keepUpToDate = new
+                {
+                    dotnetSdk = "Download from https://dotnet.microsoft.com/download",
+                    nugetPackages = "Check https://www.nuget.org for latest versions",
+                    efCoreTools = "dotnet tool update --global dotnet-ef",
+                    templateUpdates = "Update package versions in InfrastructureTemplate.cs"
                 }
             });
         }
@@ -422,6 +446,30 @@ public class CodeGenController : ControllerBase
                     Swashbuckle = "7.2.0",
                     EntityFrameworkCore = "9.0.0",
                     Serilog = "8.0.3"
+                },
+                generatedOutput = new
+                {
+                    targetFramework = "net9.0",
+                    architecturePattern = "Clean Architecture + CQRS",
+                    layers = new[] { "Domain", "Application", "Infrastructure", "API" },
+                    includesTests = false,
+                    includesDocker = false,
+                    includesMigrations = true
+                },
+                enterpriseFeatures = new
+                {
+                    propertyConstraints = true,
+                    relationships = true,
+                    businessKeys = true,
+                    visualDiagram = true,
+                    incrementalUpdates = true
+                },
+                keepUpToDate = new
+                {
+                    dotnetSdk = "Download from https://dotnet.microsoft.com/download",
+                    nugetPackages = "Check https://www.nuget.org for latest versions",
+                    efCoreTools = "dotnet tool update --global dotnet-ef",
+                    templateUpdates = "Update package versions in InfrastructureTemplate.cs"
                 },
                 error = ex.Message
             });

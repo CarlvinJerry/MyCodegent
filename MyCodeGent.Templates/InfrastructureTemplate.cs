@@ -94,6 +94,69 @@ public static class InfrastructureTemplate
         if (entity.HasSoftDelete)
         {
             sb.AppendLine("        builder.HasQueryFilter(x => !x.IsDeleted);");
+            sb.AppendLine();
+        }
+        
+        // Add relationship configurations
+        if (entity.Relationships != null && entity.Relationships.Any())
+        {
+            sb.AppendLine("        // Relationships");
+            foreach (var relationship in entity.Relationships)
+            {
+                if (relationship.Type == "OneToMany")
+                {
+                    sb.AppendLine($"        builder.HasMany(x => x.{relationship.NavigationProperty})");
+                    sb.AppendLine($"            .WithOne(x => x.{relationship.InverseNavigationProperty})");
+                    sb.AppendLine($"            .HasForeignKey(x => x.{relationship.ForeignKeyProperty})");
+                    sb.AppendLine($"            .OnDelete(DeleteBehavior.{relationship.OnDeleteBehavior});");
+                    sb.AppendLine();
+                }
+                else if (relationship.Type == "ManyToOne")
+                {
+                    sb.AppendLine($"        builder.HasOne(x => x.{relationship.NavigationProperty})");
+                    sb.AppendLine($"            .WithMany(x => x.{relationship.InverseNavigationProperty})");
+                    sb.AppendLine($"            .HasForeignKey(x => x.{relationship.ForeignKeyProperty})");
+                    sb.AppendLine($"            .OnDelete(DeleteBehavior.{relationship.OnDeleteBehavior});");
+                    sb.AppendLine();
+                }
+                else if (relationship.Type == "OneToOne")
+                {
+                    sb.AppendLine($"        builder.HasOne(x => x.{relationship.NavigationProperty})");
+                    sb.AppendLine($"            .WithOne(x => x.{relationship.InverseNavigationProperty})");
+                    sb.AppendLine($"            .HasForeignKey<{relationship.RelatedEntity}>(x => x.{relationship.ForeignKeyProperty})");
+                    sb.AppendLine($"            .OnDelete(DeleteBehavior.{relationship.OnDeleteBehavior});");
+                    sb.AppendLine();
+                }
+                else if (relationship.Type == "ManyToMany")
+                {
+                    sb.AppendLine($"        builder.HasMany(x => x.{relationship.NavigationProperty})");
+                    sb.AppendLine($"            .WithMany(x => x.{relationship.InverseNavigationProperty})");
+                    sb.AppendLine($"            .UsingEntity(\"{relationship.JoinTableName}\");");
+                    sb.AppendLine();
+                }
+            }
+        }
+        
+        // Add business key indexes
+        if (entity.BusinessKeys != null && entity.BusinessKeys.Any())
+        {
+            sb.AppendLine("        // Business Keys");
+            if (entity.BusinessKeys.Count == 1)
+            {
+                var key = entity.BusinessKeys[0];
+                sb.AppendLine($"        builder.HasIndex(x => x.{key})");
+                sb.AppendLine("            .IsUnique()");
+                sb.AppendLine($"            .HasDatabaseName(\"IX_{entity.Name}_{key}_BusinessKey\");");
+            }
+            else
+            {
+                var keys = string.Join(", ", entity.BusinessKeys.Select(k => $"x.{k}"));
+                var keyNames = string.Join("_", entity.BusinessKeys);
+                sb.AppendLine($"        builder.HasIndex(x => new {{ {keys} }})");
+                sb.AppendLine("            .IsUnique()");
+                sb.AppendLine($"            .HasDatabaseName(\"IX_{entity.Name}_{keyNames}_BusinessKey\");");
+            }
+            sb.AppendLine();
         }
         
         sb.AppendLine("    }");

@@ -234,8 +234,8 @@ public class CodeGenerator : ICodeGenerator
         // Generate documentation
         if (config.GenerateReadme)
         {
-            var readme = DocumentationTemplate.GenerateReadme(config, entities);
-            await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "README.md"), readme);
+            var readmeContent = ReadmeTemplate.Generate(entities, config);
+            await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "README.md"), readmeContent);
             Console.WriteLine("  ✓ Generated README.md");
         }
         
@@ -245,11 +245,6 @@ public class CodeGenerator : ICodeGenerator
             await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "ARCHITECTURE.md"), archDoc);
             Console.WriteLine("  ✓ Generated ARCHITECTURE.md");
         }
-        
-        // Generate README with setup instructions and missing aspects
-        var readme = ReadmeTemplate.Generate(entities, config);
-        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "README.md"), readme);
-        Console.WriteLine("  ✓ Generated README.md");
         
         // Generate .gitignore
         if (config.GenerateGitIgnore)

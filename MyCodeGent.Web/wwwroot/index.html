@@ -2017,7 +2017,9 @@
                     name: e.name,
                     hasAuditFields: e.hasAuditFields,
                     hasSoftDelete: e.hasSoftDelete,
-                    properties: e.properties
+                    properties: e.properties,
+                    relationships: e.relationships || [],
+                    businessKeys: e.businessKeys || []
                 }))
             };
 
@@ -2332,8 +2334,11 @@
                         name: p.name,
                         type: p.type,
                         isKey: p.isKey,
-                        isRequired: p.isRequired
-                    }))
+                        isRequired: p.isRequired,
+                        constraints: p.constraints || {}
+                    })),
+                    relationships: e.relationships || [],
+                    businessKeys: e.businessKeys || []
                 }))
             };
 
@@ -3376,6 +3381,118 @@
                         </div>
                         ` : ''}
                     </div>
+
+                    <!-- Generated Output Information -->
+                    ${data.generatedOutput ? `
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);">
+                        <h3 style="margin: 0 0 25px 0; color: white; font-size: 1.5rem; display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 2rem;">🏗️</span>
+                            <span>What This Tool Generates</span>
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                            <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">🎯</div>
+                                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px;">Target Framework</div>
+                                <div style="font-size: 1.3rem; font-weight: 700;">${data.generatedOutput.targetFramework}</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">🏛️</div>
+                                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px;">Architecture</div>
+                                <div style="font-size: 1.1rem; font-weight: 700; line-height: 1.3;">${data.generatedOutput.architecturePattern}</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">📚</div>
+                                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px;">Project Layers</div>
+                                <div style="font-size: 1rem; font-weight: 600; line-height: 1.4;">${data.generatedOutput.layers.join('<br>')}</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">🔄</div>
+                                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px;">EF Migrations</div>
+                                <div style="font-size: 1.3rem; font-weight: 700;">${data.generatedOutput.includesMigrations ? '✅ Included' : '❌ Not Included'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Enterprise Features -->
+                    ${data.enterpriseFeatures ? `
+                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(240, 147, 251, 0.3);">
+                        <h3 style="margin: 0 0 25px 0; color: white; font-size: 1.5rem; display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 2rem;">🚀</span>
+                            <span>Enterprise Features</span>
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">
+                            ${data.enterpriseFeatures.propertyConstraints ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 2.5rem;">⚙️</span>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem;">Property Constraints</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9;">Min/Max, Regex, Defaults</div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${data.enterpriseFeatures.relationships ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 2.5rem;">🔗</span>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem;">Relationships & FKs</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9;">1:M, M:1, 1:1, M:M</div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${data.enterpriseFeatures.businessKeys ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 2.5rem;">🔑</span>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem;">Business Keys</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9;">Alternate Unique IDs</div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${data.enterpriseFeatures.visualDiagram ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 2.5rem;">📊</span>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem;">Visual DB Diagram</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9;">Interactive ER Diagram</div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${data.enterpriseFeatures.incrementalUpdates ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 2.5rem;">🔄</span>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem;">Incremental Updates</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9;">Add to Existing Projects</div>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Keep Up to Date -->
+                    ${data.keepUpToDate ? `
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #856404; margin-top: 0;">📌 Keep This Tool Up to Date</h3>
+                        <div style="color: #856404; font-size: 0.9rem; line-height: 1.8;">
+                            <p><strong>🔹 .NET SDK:</strong><br>
+                            <a href="https://dotnet.microsoft.com/download" target="_blank" style="color: #0066cc;">Download latest from Microsoft</a></p>
+                            
+                            <p><strong>🔹 NuGet Packages:</strong><br>
+                            Check <a href="https://www.nuget.org" target="_blank" style="color: #0066cc;">NuGet.org</a> for latest versions</p>
+                            
+                            <p><strong>🔹 EF Core Tools:</strong><br>
+                            <code style="background: white; padding: 4px 8px; border-radius: 4px; color: #333;">dotnet tool update --global dotnet-ef</code></p>
+                            
+                            <p><strong>🔹 Update Package Versions:</strong><br>
+                            Edit package versions in <code style="background: white; padding: 4px 8px; border-radius: 4px; color: #333;">InfrastructureTemplate.cs</code></p>
+                            
+                            <p><strong>🔹 Current Package Versions:</strong><br>
+                            MediatR: ${data.packages.MediatR} | FluentValidation: ${data.packages.FluentValidation} | EF Core: ${data.packages.EntityFrameworkCore}</p>
+                        </div>
+                    </div>
+                    ` : ''}
 
                     <!-- Check for Updates Button -->
                     <div style="text-align: center; margin-top: 30px;">

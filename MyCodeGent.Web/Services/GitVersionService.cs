@@ -91,12 +91,12 @@ public class GitVersionService : IGitVersionService
         // Try to get version from tag
         if (!string.IsNullOrEmpty(gitInfo.Tag) && gitInfo.Tag.StartsWith("v"))
         {
-            var version = gitInfo.Tag.TrimStart('v');
+            var tagVersion = gitInfo.Tag.TrimStart('v');
             if (!gitInfo.IsClean)
             {
-                version += "-dirty";
+                tagVersion += "-dirty";
             }
-            return version;
+            return tagVersion;
         }
 
         // Calculate version based on commit count and changes
