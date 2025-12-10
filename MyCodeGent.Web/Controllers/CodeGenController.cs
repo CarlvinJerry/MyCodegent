@@ -652,6 +652,14 @@ public class CodeGenController : ControllerBase
         var auditController = MyCodeGent.Templates.AuditTemplate.GenerateAuditController(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(controllersPath, "AuditController.cs"), auditController);
         _logger.LogInformation("Generated Audit Logging System");
+        
+        // Generate Quick Start Guides
+        var vsQuickStart = MyCodeGent.Templates.QuickStartTemplate.GenerateVisualStudioGuide(config);
+        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "QUICKSTART-VISUAL-STUDIO.md"), vsQuickStart);
+        
+        var vscodeQuickStart = MyCodeGent.Templates.QuickStartTemplate.GenerateVSCodeGuide(config);
+        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "QUICKSTART-VSCODE.md"), vscodeQuickStart);
+        _logger.LogInformation("Generated Quick Start Guides");
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)
