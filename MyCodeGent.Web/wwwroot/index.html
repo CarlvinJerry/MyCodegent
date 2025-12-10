@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyCodeGent - CRUD Code Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            font-family: 'Courier New', monospace;
+            min-height: 400px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .entity-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .entity-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .entity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .entity-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #667eea;
+        }
+
+        .property-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .property-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .preview-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .preview-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: #667eea;
+            color: white;
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+
+        .preview-code {
+            padding: 15px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 MyCodeGent</h1>
+            <p>CRUD Code Generator - Clean Architecture + CQRS Pattern</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('builder')">Entity Builder</button>
+                <button class="tab" onclick="switchTab('json')">JSON Config</button>
+                <button class="tab" onclick="switchTab('preview')">Preview</button>
+            </div>
+
+            <div id="builder-tab" class="tab-content active">
+                <div class="form-group">
+                    <label>Root Namespace</label>
+                    <input type="text" id="namespace" value="MyApp" placeholder="e.g., MyApp">
+                </div>
+
+                <div class="form-group">
+                    <label>Generation Options</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genDomain" checked>
+                            <label for="genDomain">Domain Layer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genApp" checked>
+                            <label for="genApp">Application Layer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genInfra" checked>
+                            <label for="genInfra">Infrastructure Layer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="genApi" checked>
+                            <label for="genApi">API Layer</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="entity-list" id="entityList"></div>
+
+                <button class="btn btn-secondary" onclick="addEntity()">+ Add Entity</button>
+                <button class="btn btn-primary" onclick="generateCode()" style="float: right;">Generate Code</button>
+                <div style="clear: both;"></div>
+
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Generating your code...</p>
+                </div>
+
+                <div id="result"></div>
+            </div>
+
+            <div id="json-tab" class="tab-content">
+                <div class="form-group">
+                    <label>JSON Configuration</label>
+                    <textarea id="jsonConfig"></textarea>
+                </div>
+                <button class="btn btn-secondary" onclick="loadSampleConfig()">Load Sample</button>
+                <button class="btn btn-primary" onclick="generateFromJson()">Generate from JSON</button>
+            </div>
+
+            <div id="preview-tab" class="tab-content">
+                <div class="form-group">
+                    <label>Select Entity to Preview</label>
+                    <select id="previewEntity" onchange="loadPreview()">
+                        <option value="">-- Select Entity --</option>
+                    </select>
+                </div>
+                <div id="previewContent" class="preview-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api/codegen';
+        let entities = [];
+        let currentEntityId = 0;
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            if (tabName === 'preview') {
+                updatePreviewEntityList();
+            }
+        }
+
+        function addEntity() {
+            const id = ++currentEntityId;
+            const entity = {
+                id,
+                name: `Entity${id}`,
+                hasAuditFields: true,
+                hasSoftDelete: true,
+                properties: [
+                    { name: 'Id', type: 'int', isKey: true, isRequired: true }
+                ]
+            };
+            entities.push(entity);
+            renderEntities();
+        }
+
+        function removeEntity(id) {
+            entities = entities.filter(e => e.id !== id);
+            renderEntities();
+        }
+
+        function addProperty(entityId) {
+            const entity = entities.find(e => e.id === entityId);
+            if (entity) {
+                entity.properties.push({
+                    name: 'NewProperty',
+                    type: 'string',
+                    isRequired: false,
+                    isKey: false,
+                    isNullable: true
+                });
+                renderEntities();
+            }
+        }
+
+        function removeProperty(entityId, propIndex) {
+            const entity = entities.find(e => e.id === entityId);
+            if (entity) {
+                entity.properties.splice(propIndex, 1);
+                renderEntities();
+            }
+        }
+
+        function renderEntities() {
+            const container = document.getElementById('entityList');
+            container.innerHTML = entities.map(entity => `
+                <div class="entity-card">
+                    <div class="entity-header">
+                        <input type="text" value="${entity.name}" 
+                               onchange="updateEntityName(${entity.id}, this.value)"
+                               style="width: 200px; font-weight: 600; font-size: 1.1rem;">
+                        <button class="btn btn-secondary" onclick="removeEntity(${entity.id})">Remove</button>
+                    </div>
+                    <div class="checkbox-group" style="margin: 10px 0;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="audit${entity.id}" 
+                                   ${entity.hasAuditFields ? 'checked' : ''}
+                                   onchange="toggleAudit(${entity.id})">
+                            <label for="audit${entity.id}">Audit Fields</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="soft${entity.id}" 
+                                   ${entity.hasSoftDelete ? 'checked' : ''}
+                                   onchange="toggleSoftDelete(${entity.id})">
+                            <label for="soft${entity.id}">Soft Delete</label>
+                        </div>
+                    </div>
+                    <div class="property-list">
+                        ${entity.properties.map((prop, idx) => `
+                            <div class="property-item">
+                                <input type="text" value="${prop.name}" 
+                                       onchange="updateProperty(${entity.id}, ${idx}, 'name', this.value)"
+                                       style="width: 150px;">
+                                <select onchange="updateProperty(${entity.id}, ${idx}, 'type', this.value)"
+                                        style="width: 100px;">
+                                    ${['string', 'int', 'long', 'decimal', 'bool', 'DateTime', 'Guid'].map(t => 
+                                        `<option value="${t}" ${prop.type === t ? 'selected' : ''}>${t}</option>`
+                                    ).join('')}
+                                </select>
+                                <label style="font-size: 0.9rem;">
+                                    <input type="checkbox" ${prop.isKey ? 'checked' : ''}
+                                           onchange="updateProperty(${entity.id}, ${idx}, 'isKey', this.checked)">
+                                    Key
+                                </label>
+                                <label style="font-size: 0.9rem;">
+                                    <input type="checkbox" ${prop.isRequired ? 'checked' : ''}
+                                           onchange="updateProperty(${entity.id}, ${idx}, 'isRequired', this.checked)">
+                                    Required
+                                </label>
+                                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;"
+                                        onclick="removeProperty(${entity.id}, ${idx})">×</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-secondary" style="margin-top: 10px; padding: 8px 16px; font-size: 0.9rem;"
+                            onclick="addProperty(${entity.id})">+ Add Property</button>
+                </div>
+            `).join('');
+        }
+
+        function updateEntityName(id, name) {
+            const entity = entities.find(e => e.id === id);
+            if (entity) entity.name = name;
+        }
+
+        function toggleAudit(id) {
+            const entity = entities.find(e => e.id === id);
+            if (entity) entity.hasAuditFields = !entity.hasAuditFields;
+        }
+
+        function toggleSoftDelete(id) {
+            const entity = entities.find(e => e.id === id);
+            if (entity) entity.hasSoftDelete = !entity.hasSoftDelete;
+        }
+
+        function updateProperty(entityId, propIdx, field, value) {
+            const entity = entities.find(e => e.id === entityId);
+            if (entity && entity.properties[propIdx]) {
+                entity.properties[propIdx][field] = value;
+            }
+        }
+
+        async function generateCode() {
+            if (entities.length === 0) {
+                alert('Please add at least one entity');
+                return;
+            }
+
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('result').innerHTML = '';
+
+            const config = {
+                rootNamespace: document.getElementById('namespace').value,
+                generateDomain: document.getElementById('genDomain').checked,
+                generateApplication: document.getElementById('genApp').checked,
+                generateInfrastructure: document.getElementById('genInfra').checked,
+                generateApi: document.getElementById('genApi').checked,
+                useMediator: true,
+                useFluentValidation: true,
+                databaseProvider: 'SqlServer'
+            };
+
+            const payload = {
+                config,
+                entities: entities.map(e => ({
+                    name: e.name,
+                    hasAuditFields: e.hasAuditFields,
+                    hasSoftDelete: e.hasSoftDelete,
+                    properties: e.properties
+                }))
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                document.getElementById('loading').classList.remove('active');
+                
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = `
+                        <div class="alert alert-success">
+                            <h3>✅ Code Generated Successfully!</h3>
+                            <p><strong>Files Generated:</strong> ${result.filesGenerated}</p>
+                            <p><strong>Session ID:</strong> ${result.sessionId}</p>
+                            <a href="${result.downloadUrl}" class="btn btn-primary" style="margin-top: 10px; display: inline-block;">
+                                Download ZIP
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Generation failed');
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('result').innerHTML = `
+                    <div class="alert alert-error">
+                        <h3>❌ Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadSampleConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/sample-config`);
+                const config = await response.json();
+                document.getElementById('jsonConfig').value = JSON.stringify(config, null, 2);
+            } catch (error) {
+                alert('Error loading sample config: ' + error.message);
+            }
+        }
+
+        async function generateFromJson() {
+            try {
+                const json = JSON.parse(document.getElementById('jsonConfig').value);
+                
+                const response = await fetch(`${API_BASE}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(json)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(`Success! ${result.filesGenerated} files generated. Session: ${result.sessionId}`);
+                    window.open(result.downloadUrl, '_blank');
+                } else {
+                    throw new Error(result.error || 'Generation failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function updatePreviewEntityList() {
+            const select = document.getElementById('previewEntity');
+            select.innerHTML = '<option value="">-- Select Entity --</option>' +
+                entities.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+        }
+
+        async function loadPreview() {
+            const entityId = parseInt(document.getElementById('previewEntity').value);
+            if (!entityId) return;
+
+            const entity = entities.find(e => e.id === entityId);
+            if (!entity) return;
+
+            const config = {
+                rootNamespace: document.getElementById('namespace').value,
+                generateDomain: true,
+                generateApplication: true,
+                generateInfrastructure: true,
+                generateApi: true
+            };
+
+            const payload = {
+                config,
+                entity: {
+                    name: entity.name,
+                    hasAuditFields: entity.hasAuditFields,
+                    hasSoftDelete: entity.hasSoftDelete,
+                    properties: entity.properties
+                }
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/preview`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const container = document.getElementById('previewContent');
+                    container.innerHTML = Object.entries(result.previews).map(([name, code]) => `
+                        <div class="preview-card">
+                            <div class="preview-header">${name}</div>
+                            <pre class="preview-code">${escapeHtml(code)}</pre>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                alert('Error loading preview: ' + error.message);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize with one entity
+        addEntity();
+    </script>
+</body>
+</html>

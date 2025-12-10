@@ -1,0 +1,6 @@
+@MyCodeGent.Web_HostAddress = http://localhost:5197
+
+GET {{MyCodeGent.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
