@@ -66,6 +66,15 @@ public class CodeGenerator : ICodeGenerator
         await _fileWriter.WriteFileAsync(dtoFile, dtoCode);
         Console.WriteLine($"  ✓ Generated DTO: {entity.Name}Dto.cs");
         
+        // Generate AutoMapper Profile
+        if (config.UseAutoMapper)
+        {
+            var mappingPath = Path.Combine(config.OutputPath, "Application", "Mappings");
+            var mappingProfile = MappingProfileTemplate.Generate(entity);
+            await _fileWriter.WriteFileAsync(Path.Combine(mappingPath, $"{entity.Name}MappingProfile.cs"), mappingProfile);
+            Console.WriteLine($"  ✓ Generated AutoMapper Profile: {entity.Name}MappingProfile.cs");
+        }
+        
         // Generate Commands
         await GenerateCommandsAsync(entity, config, appPath);
         

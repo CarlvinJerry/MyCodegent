@@ -529,6 +529,15 @@ public class CodeGenController : ControllerBase
         var modelsPath = Path.Combine(config.OutputPath, "Application", "Common", "Models");
         var pagedResultCode = MyCodeGent.Templates.InfrastructureTemplate.GeneratePagedResult(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(modelsPath, "PagedResult.cs"), pagedResultCode);
+        
+        // Generate Master AutoMapper Profile
+        if (config.UseAutoMapper)
+        {
+            var mappingPath = Path.Combine(config.OutputPath, "Application", "Mappings");
+            var masterProfile = MyCodeGent.Templates.MappingProfileTemplate.GenerateMasterProfile(entities, config.RootNamespace);
+            await _fileWriter.WriteFileAsync(Path.Combine(mappingPath, "MappingProfile.cs"), masterProfile);
+            _logger.LogInformation("Generated Master AutoMapper Profile");
+        }
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)
