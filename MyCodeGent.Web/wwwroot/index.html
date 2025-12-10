@@ -617,6 +617,142 @@
             opacity: 1;
             visibility: visible;
         }
+
+        /* Property Constraints Modal */
+        .constraints-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .constraints-modal.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .constraints-modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .constraints-modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .constraints-modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .constraints-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .constraints-modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .constraints-section {
+            margin-bottom: 24px;
+        }
+
+        .constraints-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .constraints-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .constraint-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .constraint-field label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .constraint-field input[type="text"],
+        .constraint-field input[type="number"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .constraint-field input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .constraints-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
 </head>
 <body>
@@ -677,6 +813,132 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Property Constraints Modal Overlay -->
+    <div class="modal-overlay" id="constraintsOverlay" onclick="closeConstraintsModal()"></div>
+
+    <!-- Property Constraints Modal -->
+    <div class="constraints-modal" id="constraintsModal">
+        <div class="constraints-modal-header">
+            <h3>⚙️ Property Constraints</h3>
+            <button class="constraints-modal-close" onclick="closeConstraintsModal()">×</button>
+        </div>
+        <div class="constraints-modal-body">
+            <div id="constraintsPropertyInfo" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+                <strong>Property:</strong> <span id="constraintsPropertyName"></span> (<span id="constraintsPropertyType"></span>)
+            </div>
+
+            <!-- String Constraints -->
+            <div class="constraints-section" id="stringConstraints" style="display: none;">
+                <h4>📝 String Constraints</h4>
+                <div class="constraints-grid">
+                    <div class="constraint-field">
+                        <label>Min Length</label>
+                        <input type="number" id="minLength" min="0" placeholder="e.g., 3">
+                    </div>
+                    <div class="constraint-field">
+                        <label>Max Length</label>
+                        <input type="number" id="maxLength" min="0" placeholder="e.g., 100">
+                    </div>
+                    <div class="constraint-field" style="grid-column: 1 / -1;">
+                        <label>Regex Pattern</label>
+                        <input type="text" id="regexPattern" placeholder="e.g., ^[A-Za-z0-9]+$">
+                        <small style="color: #666; font-size: 0.75rem;">Validation pattern for the string</small>
+                    </div>
+                    <div class="constraint-field" style="grid-column: 1 / -1;">
+                        <label>Default Value</label>
+                        <input type="text" id="stringDefaultValue" placeholder="e.g., 'Default'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Numeric Constraints -->
+            <div class="constraints-section" id="numericConstraints" style="display: none;">
+                <h4>🔢 Numeric Constraints</h4>
+                <div class="constraints-grid">
+                    <div class="constraint-field">
+                        <label>Min Value</label>
+                        <input type="number" id="minValue" placeholder="e.g., 0">
+                    </div>
+                    <div class="constraint-field">
+                        <label>Max Value</label>
+                        <input type="number" id="maxValue" placeholder="e.g., 100">
+                    </div>
+                    <div class="constraint-field">
+                        <label>Precision (Decimal)</label>
+                        <input type="number" id="precision" min="1" max="38" placeholder="e.g., 18">
+                        <small style="color: #666; font-size: 0.75rem;">Total digits</small>
+                    </div>
+                    <div class="constraint-field">
+                        <label>Scale (Decimal)</label>
+                        <input type="number" id="scale" min="0" placeholder="e.g., 2">
+                        <small style="color: #666; font-size: 0.75rem;">Decimal places</small>
+                    </div>
+                    <div class="constraint-field" style="grid-column: 1 / -1;">
+                        <label>Default Value</label>
+                        <input type="number" id="numericDefaultValue" placeholder="e.g., 0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date/Time Constraints -->
+            <div class="constraints-section" id="dateConstraints" style="display: none;">
+                <h4>📅 Date/Time Constraints</h4>
+                <div class="constraints-grid">
+                    <div class="constraint-field" style="grid-column: 1 / -1;">
+                        <label>Default Value</label>
+                        <input type="text" id="dateDefaultValue" placeholder="e.g., DateTime.Now, DateTime.UtcNow">
+                        <small style="color: #666; font-size: 0.75rem;">Use C# expressions like DateTime.Now</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boolean Constraints -->
+            <div class="constraints-section" id="boolConstraints" style="display: none;">
+                <h4>✓ Boolean Constraints</h4>
+                <div class="constraints-grid">
+                    <div class="constraint-field">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="boolDefaultValue">
+                            Default Value (True)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Constraints -->
+            <div class="constraints-section">
+                <h4>🔧 General Constraints</h4>
+                <div class="constraints-grid">
+                    <div class="constraint-field">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="isUnique">
+                            Unique
+                        </label>
+                        <small style="color: #666; font-size: 0.75rem;">Enforce unique values</small>
+                    </div>
+                    <div class="constraint-field">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="isIndexed">
+                            Create Index
+                        </label>
+                        <small style="color: #666; font-size: 0.75rem;">Improve query performance</small>
+                    </div>
+                    <div class="constraint-field">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="isComputed">
+                            Computed Column
+                        </label>
+                        <small style="color: #666; font-size: 0.75rem;">Database-computed value</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="constraints-modal-footer">
+            <button class="btn btn-secondary" onclick="closeConstraintsModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveConstraints()">Save Constraints</button>
         </div>
     </div>
 
@@ -1650,8 +1912,127 @@
             }
         }
         
+        // Property Constraints Modal Functions
+        let currentConstraintsEntity = null;
+        let currentConstraintsProperty = null;
+
         function showPropertyConstraints(entityId, propIdx) {
-            alert('Advanced property constraints coming soon!\n\nPlanned features:\n- Min/Max Length\n- Range validation\n- Regex patterns\n- Default values\n- Foreign keys\n- Navigation properties');
+            const entity = entities.find(e => e.id === entityId);
+            if (!entity || !entity.properties[propIdx]) return;
+
+            const property = entity.properties[propIdx];
+            currentConstraintsEntity = entityId;
+            currentConstraintsProperty = propIdx;
+
+            // Set property info
+            document.getElementById('constraintsPropertyName').textContent = property.name || 'Unnamed';
+            document.getElementById('constraintsPropertyType').textContent = property.type || 'string';
+
+            // Initialize constraints if not exists
+            if (!property.constraints) {
+                property.constraints = {};
+            }
+
+            // Show/hide sections based on type
+            const stringTypes = ['string'];
+            const numericTypes = ['int', 'long', 'decimal', 'double', 'float', 'short', 'byte'];
+            const dateTypes = ['DateTime', 'DateTimeOffset', 'DateOnly', 'TimeOnly'];
+            const boolTypes = ['bool'];
+
+            document.getElementById('stringConstraints').style.display = 
+                stringTypes.includes(property.type) ? 'block' : 'none';
+            document.getElementById('numericConstraints').style.display = 
+                numericTypes.includes(property.type) ? 'block' : 'none';
+            document.getElementById('dateConstraints').style.display = 
+                dateTypes.includes(property.type) ? 'block' : 'none';
+            document.getElementById('boolConstraints').style.display = 
+                boolTypes.includes(property.type) ? 'block' : 'none';
+
+            // Load existing constraints
+            loadConstraintsIntoForm(property.constraints, property.type);
+
+            // Show modal
+            document.getElementById('constraintsModal').classList.add('open');
+            document.getElementById('constraintsOverlay').classList.add('open');
+        }
+
+        function loadConstraintsIntoForm(constraints, type) {
+            // String constraints
+            document.getElementById('minLength').value = constraints.minLength || '';
+            document.getElementById('maxLength').value = constraints.maxLength || '';
+            document.getElementById('regexPattern').value = constraints.regexPattern || '';
+            document.getElementById('stringDefaultValue').value = constraints.stringDefaultValue || '';
+
+            // Numeric constraints
+            document.getElementById('minValue').value = constraints.minValue || '';
+            document.getElementById('maxValue').value = constraints.maxValue || '';
+            document.getElementById('precision').value = constraints.precision || '';
+            document.getElementById('scale').value = constraints.scale || '';
+            document.getElementById('numericDefaultValue').value = constraints.numericDefaultValue || '';
+
+            // Date constraints
+            document.getElementById('dateDefaultValue').value = constraints.dateDefaultValue || '';
+
+            // Boolean constraints
+            document.getElementById('boolDefaultValue').checked = constraints.boolDefaultValue || false;
+
+            // General constraints
+            document.getElementById('isUnique').checked = constraints.isUnique || false;
+            document.getElementById('isIndexed').checked = constraints.isIndexed || false;
+            document.getElementById('isComputed').checked = constraints.isComputed || false;
+        }
+
+        function saveConstraints() {
+            if (currentConstraintsEntity === null || currentConstraintsProperty === null) return;
+
+            const entity = entities.find(e => e.id === currentConstraintsEntity);
+            if (!entity) return;
+
+            const property = entity.properties[currentConstraintsProperty];
+            if (!property) return;
+
+            // Save all constraints
+            property.constraints = {
+                // String constraints
+                minLength: document.getElementById('minLength').value || null,
+                maxLength: document.getElementById('maxLength').value || null,
+                regexPattern: document.getElementById('regexPattern').value || null,
+                stringDefaultValue: document.getElementById('stringDefaultValue').value || null,
+
+                // Numeric constraints
+                minValue: document.getElementById('minValue').value || null,
+                maxValue: document.getElementById('maxValue').value || null,
+                precision: document.getElementById('precision').value || null,
+                scale: document.getElementById('scale').value || null,
+                numericDefaultValue: document.getElementById('numericDefaultValue').value || null,
+
+                // Date constraints
+                dateDefaultValue: document.getElementById('dateDefaultValue').value || null,
+
+                // Boolean constraints
+                boolDefaultValue: document.getElementById('boolDefaultValue').checked,
+
+                // General constraints
+                isUnique: document.getElementById('isUnique').checked,
+                isIndexed: document.getElementById('isIndexed').checked,
+                isComputed: document.getElementById('isComputed').checked
+            };
+
+            // Close modal
+            closeConstraintsModal();
+
+            // Visual feedback
+            console.log('Constraints saved for property:', property.name, property.constraints);
+            
+            // Re-render to show constraint indicator
+            renderEntities();
+        }
+
+        function closeConstraintsModal() {
+            document.getElementById('constraintsModal').classList.remove('open');
+            document.getElementById('constraintsOverlay').classList.remove('open');
+            currentConstraintsEntity = null;
+            currentConstraintsProperty = null;
         }
 
         // Load Version Information and Build About Page
