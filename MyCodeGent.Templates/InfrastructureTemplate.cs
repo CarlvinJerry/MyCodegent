@@ -47,7 +47,17 @@ public static class InfrastructureTemplate
         sb.AppendLine();
         sb.AppendLine("    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)");
         sb.AppendLine("    {");
-        sb.AppendLine("        return await base.SaveChangesAsync(cancellationToken);");
+        sb.AppendLine("        // Performance: Disable automatic detection of changes");
+        sb.AppendLine("        ChangeTracker.AutoDetectChangesEnabled = false;");
+        sb.AppendLine();
+        sb.AppendLine("        try");
+        sb.AppendLine("        {");
+        sb.AppendLine("            return await base.SaveChangesAsync(cancellationToken);");
+        sb.AppendLine("        }");
+        sb.AppendLine("        finally");
+        sb.AppendLine("        {");
+        sb.AppendLine("            ChangeTracker.AutoDetectChangesEnabled = true;");
+        sb.AppendLine("        }");
         sb.AppendLine("    }");
         sb.AppendLine("}");
         

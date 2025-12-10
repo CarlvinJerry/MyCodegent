@@ -173,6 +173,7 @@ public static class HandlerTemplate
         sb.AppendLine($"    public async Task<{entity.Name}Dto?> Handle(Get{entity.Name}ByIdQuery request, CancellationToken cancellationToken)");
         sb.AppendLine("    {");
         sb.AppendLine($"        var entity = await _context.{entity.Name}s");
+        sb.AppendLine("            .AsNoTracking()");
         sb.AppendLine($"            .Where(x => x.{keyName} == request.{keyName})");
         
         if (entity.HasSoftDelete)
@@ -220,6 +221,7 @@ public static class HandlerTemplate
         sb.AppendLine($"    public async Task<List<{entity.Name}Dto>> Handle(GetAll{entity.Name}sQuery request, CancellationToken cancellationToken)");
         sb.AppendLine("    {");
         sb.AppendLine($"        return await _context.{entity.Name}s");
+        sb.AppendLine("            .AsNoTracking()");
         
         if (entity.HasSoftDelete)
         {

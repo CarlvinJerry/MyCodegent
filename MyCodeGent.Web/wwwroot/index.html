@@ -1716,7 +1716,150 @@
 
             <div id="about-tab" class="tab-content">
                 <div style="max-width: 900px; margin: 0 auto;">
-                    <h2 style="color: var(--primary-color); margin-bottom: 20px;">📦 MyCodeGent - Version Information</h2>
+                    <!-- About This Tool Section -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 16px; margin-bottom: 30px; color: white; box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);">
+                        <h2 style="margin: 0 0 20px 0; font-size: 2rem;">🚀 About MyCodeGent</h2>
+                        <p style="font-size: 1.1rem; line-height: 1.6; margin: 0;">
+                            A professional <strong>Clean Architecture + CQRS</strong> code generator that creates production-ready .NET applications in seconds.
+                        </p>
+                    </div>
+
+                    <!-- What It Generates -->
+                    <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3 style="color: var(--primary-color); margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5rem;">📦</span> What This Tool Generates
+                        </h3>
+                        <div style="display: grid; gap: 15px;">
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Complete 4-Layer Architecture</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Domain, Application, Infrastructure, and API layers with proper separation of concerns</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ CQRS Pattern Implementation</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Commands (Create, Update, Delete) and Queries (GetById, GetAll) with MediatR handlers</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Entity Framework Core Setup</strong>
+                                <span style="color: #666; font-size: 0.95rem;">DbContext, entity configurations, relationships, indexes, and business keys</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ RESTful API Controllers</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Full CRUD endpoints with Swagger documentation and XML comments</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ FluentValidation Rules</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Automatic validation based on your property constraints (min/max length, regex, ranges)</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ AutoMapper Profiles</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Bidirectional mappings between entities, DTOs, and commands</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Production Infrastructure</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Health checks, CORS, exception handling, Serilog logging, and appsettings.json</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Seed Data</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Realistic test data with proper relationship references for immediate testing</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Git Repository</strong>
+                                <span style="color: #666; font-size: 0.95rem;">Automatically initialized with .gitignore and initial commit</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What You Need to Add -->
+                    <div style="background: #fff3cd; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 2px solid #ffc107;">
+                        <h3 style="color: #856404; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5rem;">⚠️</span> What You Need to Add/Customize
+                        </h3>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="padding: 12px; background: white; border-radius: 6px;">
+                                <strong style="color: #856404;">→ Business Logic</strong>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Add your custom business rules and domain logic to handlers and entities</p>
+                            </div>
+                            <div style="padding: 12px; background: white; border-radius: 6px;">
+                                <strong style="color: #856404;">→ Authentication & Authorization</strong>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Configure JWT/Identity and add [Authorize] attributes to controllers</p>
+                            </div>
+                            <div style="padding: 12px; background: white; border-radius: 6px;">
+                                <strong style="color: #856404;">→ Database Connection String</strong>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Update appsettings.json with your actual database connection</p>
+                            </div>
+                            <div style="padding: 12px; background: white; border-radius: 6px;">
+                                <strong style="color: #856404;">→ Custom Queries</strong>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Add specialized queries beyond basic GetById/GetAll (e.g., search, filtering)</p>
+                            </div>
+                            <div style="padding: 12px; background: white; border-radius: 6px;">
+                                <strong style="color: #856404;">→ Unit & Integration Tests</strong>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Create test projects to ensure code quality (not auto-generated yet)</p>
+                            </div>
+                            <div style="padding: 12px; background: white; border-radius: 6px;">
+                                <strong style="color: #856404;">→ Frontend Application</strong>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Build your UI (React, Angular, Vue, Blazor) to consume the API</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Getting Started -->
+                    <div style="background: #d1ecf1; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 2px solid #17a2b8;">
+                        <h3 style="color: #0c5460; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5rem;">🎯</span> Getting Started with Generated Code
+                        </h3>
+                        <div style="background: white; padding: 20px; border-radius: 8px;">
+                            <ol style="margin: 0; padding-left: 20px; color: #0c5460;">
+                                <li style="margin-bottom: 12px;"><strong>Download & Extract</strong> - Get your generated code ZIP file</li>
+                                <li style="margin-bottom: 12px;"><strong>Open in IDE</strong> - Use Visual Studio 2022 or VS Code with C# extension</li>
+                                <li style="margin-bottom: 12px;"><strong>Restore Packages</strong> - Run <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet restore</code></li>
+                                <li style="margin-bottom: 12px;"><strong>Update Connection String</strong> - Edit appsettings.json with your database</li>
+                                <li style="margin-bottom: 12px;"><strong>Create Database</strong> - Run <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet ef database update</code></li>
+                                <li style="margin-bottom: 12px;"><strong>Run Application</strong> - Execute <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet run</code></li>
+                                <li style="margin-bottom: 0;"><strong>Explore API</strong> - Visit <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">/swagger</code> to test endpoints</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Technical Details -->
+                    <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3 style="color: var(--primary-color); margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5rem;">⚙️</span> Technical Stack
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🎯</div>
+                                <strong style="display: block; color: #667eea; margin-bottom: 5px;">.NET 9.0</strong>
+                                <span style="font-size: 0.85rem; color: #666;">Latest LTS</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🗄️</div>
+                                <strong style="display: block; color: #667eea; margin-bottom: 5px;">EF Core 9.0</strong>
+                                <span style="font-size: 0.85rem; color: #666;">ORM</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">📨</div>
+                                <strong style="display: block; color: #667eea; margin-bottom: 5px;">MediatR 12.4</strong>
+                                <span style="font-size: 0.85rem; color: #666;">CQRS</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">✅</div>
+                                <strong style="display: block; color: #667eea; margin-bottom: 5px;">FluentValidation</strong>
+                                <span style="font-size: 0.85rem; color: #666;">Validation</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🔄</div>
+                                <strong style="display: block; color: #667eea; margin-bottom: 5px;">AutoMapper</strong>
+                                <span style="font-size: 0.85rem; color: #666;">Mapping</span>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">📚</div>
+                                <strong style="display: block; color: #667eea; margin-bottom: 5px;">Swagger</strong>
+                                <span style="font-size: 0.85rem; color: #666;">API Docs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 style="color: var(--primary-color); margin: 30px 0 20px 0;">📦 Version Information</h2>
                     
                     <!-- Loading State -->
                     <div id="aboutLoading" style="text-align: center; padding: 50px;">

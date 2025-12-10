@@ -38,6 +38,7 @@ public static class ControllerTemplate
         
         // GET All
         sb.AppendLine("    [HttpGet]");
+        sb.AppendLine("    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]");
         sb.AppendLine($"    public async Task<ActionResult<List<{entity.Name}Dto>>> GetAll()");
         sb.AppendLine("    {");
         sb.AppendLine($"        var result = await _mediator.Send(new GetAll{entity.Name}sQuery());");
@@ -47,6 +48,7 @@ public static class ControllerTemplate
         
         // GET By Id
         sb.AppendLine($"    [HttpGet(\"{{{keyNameLower}}}\")]");
+        sb.AppendLine("    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { \"" + keyNameLower + "\" })]");
         sb.AppendLine($"    public async Task<ActionResult<{entity.Name}Dto>> GetById({keyType} {keyNameLower})");
         sb.AppendLine("    {");
         sb.AppendLine($"        var result = await _mediator.Send(new Get{entity.Name}ByIdQuery({keyNameLower}));");
