@@ -1,10 +1,12 @@
 using MyCodeGent.Core.Interfaces;
 using MyCodeGent.Core.Services;
 using MyCodeGent.Web.Middleware;
+using MyCodeGent.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
+builder.Services.AddSingleton<IVersionService, VersionService>();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

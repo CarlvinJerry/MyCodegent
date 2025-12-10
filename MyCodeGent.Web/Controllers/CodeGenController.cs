@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MyCodeGent.Core.Interfaces;
 using MyCodeGent.Web.Models;
+using MyCodeGent.Web.Services;
 using System.IO.Compression;
 using TemplateModels = MyCodeGent.Templates.Models;
 
@@ -13,15 +14,18 @@ public class CodeGenController : ControllerBase
     private readonly ICodeGenerator _codeGenerator;
     private readonly IFileWriter _fileWriter;
     private readonly ILogger<CodeGenController> _logger;
+    private readonly IVersionService _versionService;
 
     public CodeGenController(
         ICodeGenerator codeGenerator,
         IFileWriter fileWriter,
-        ILogger<CodeGenController> logger)
+        ILogger<CodeGenController> logger,
+        IVersionService versionService)
     {
         _codeGenerator = codeGenerator;
         _fileWriter = fileWriter;
         _logger = logger;
+        _versionService = versionService;
     }
 
     [HttpPost("generate")]
@@ -320,23 +324,32 @@ public class CodeGenController : ControllerBase
     [HttpGet("version")]
     public IActionResult GetVersion()
     {
+        var versionInfo = _versionService.GetVersionInfo();
+        
         return Ok(new
         {
-            version = "2.0.0",
-            releaseDate = "2024-12-10",
-            buildNumber = "2024.12.10.001",
+            version = versionInfo.Version,
+            releaseDate = versionInfo.BuildDate.ToString("yyyy-MM-dd"),
+            buildNumber = versionInfo.BuildNumber,
+            buildDate = versionInfo.BuildDate,
             codeName = "Complete Application Generator",
-            dotnetVersion = "9.0",
+            dotnetVersion = versionInfo.DotNetVersion,
+            runtimeVersion = versionInfo.RuntimeVersion,
+            osDescription = versionInfo.OsDescription,
+            processArchitecture = versionInfo.ProcessArchitecture,
+            lastUpdated = versionInfo.LastUpdated,
             features = new
             {
                 completeAppGeneration = true,
                 incrementalGeneration = true,
                 databaseProviders = new[] { "SqlServer", "PostgreSql", "MySql", "Sqlite", "InMemory" },
-                authentication = new[] { "JWT", "Identity" },
-                logging = new[] { "Serilog", "NLog", "ApplicationInsights" },
+                authentication = new[] { "JWT", "Identity", "AzureAD", "Auth0" },
+                logging = new[] { "Serilog", "NLog", "Default", "ApplicationInsights" },
                 documentation = true,
                 swagger = true,
-                healthChecks = true
+                healthChecks = true,
+                propertyTypes = 15,
+                validation = true
             },
             packages = new
             {

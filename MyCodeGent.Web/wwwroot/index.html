@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyCodeGent - CRUD Code Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,18 +15,18 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
@@ -81,28 +84,38 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.87);
+            font-size: 0.875rem;
+            letter-spacing: 0.01071em;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 16px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.23);
+            border-radius: 4px;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: rgba(0, 0, 0, 0.87);
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #6200ea;
+            border-width: 2px;
+            padding: 15px 11px;
         }
 
         textarea {
@@ -112,73 +125,126 @@
         }
 
         .btn {
-            padding: 12px 30px;
+            padding: 10px 24px;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.02857em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.14), 0 3px 4px rgba(0,0,0,0.12), 0 1px 5px rgba(0,0,0,0.2);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #6200ea;
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #7c4dff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.14), 0 6px 8px rgba(0,0,0,0.12), 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary:active {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.14), 0 8px 12px rgba(0,0,0,0.12), 0 3px 14px rgba(0,0,0,0.2);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: white;
+            color: #6200ea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.14);
         }
 
         .btn-secondary:hover {
-            background: #e0e0e0;
+            background: rgba(98, 0, 234, 0.04);
         }
 
         .entity-list {
             display: grid;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .entity-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px solid #e0e0e0;
+            background: white;
+            padding: 24px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .entity-card:hover {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         }
 
         .entity-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         }
 
         .entity-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #667eea;
+            font-weight: 500;
+            font-size: 1.25rem;
+            color: rgba(0, 0, 0, 0.87);
+            letter-spacing: 0.0075em;
         }
 
         .property-list {
             display: grid;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 16px;
         }
 
         .property-item {
-            background: white;
-            padding: 8px 12px;
+            background: #fafafa;
+            padding: 16px;
             border-radius: 4px;
-            font-size: 0.9rem;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            display: grid;
+            grid-template-columns: minmax(140px, 1fr) minmax(110px, auto) auto auto auto auto auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .property-item input[type="text"] {
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+
+        .property-item select {
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+
+        .property-item input[type="number"] {
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+
+        .property-item input[type="checkbox"] {
+            width: auto;
+            margin: 0 8px 0 0;
+        }
+
+        .property-item label {
+            margin: 0;
+            font-size: 0.875rem;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .property-item button {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            min-width: auto;
         }
 
         .alert {
@@ -255,8 +321,9 @@
 
         .checkbox-group {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             flex-wrap: wrap;
+            margin-top: 8px;
         }
 
         .checkbox-item {
@@ -266,7 +333,15 @@
         }
 
         .checkbox-item input[type="checkbox"] {
-            width: auto;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #6200ea;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            user-select: none;
         }
     </style>
 </head>
@@ -289,7 +364,8 @@
             <div id="builder-tab" class="tab-content active">
                 <div class="form-group">
                     <label>Root Namespace</label>
-                    <input type="text" id="namespace" value="MyApp" placeholder="e.g., MyApp">
+                    <input type="text" id="namespace" value="MyApp" placeholder="e.g., MyApp" onblur="validateNamespace(this)">
+                    <small style="color: #666; display: block; margin-top: 5px;">Must be a valid C# identifier (e.g., MyCompany.MyApp)</small>
                 </div>
 
                 <div class="form-group">
@@ -312,6 +388,65 @@
                             <label for="genApi">API Layer</label>
                         </div>
                     </div>
+                </div>
+
+                <!-- Database Configuration -->
+                <div class="form-group">
+                    <label>🗄️ Database Provider</label>
+                    <select id="databaseProvider" onchange="updateConnectionStringPlaceholder()">
+                        <option value="SqlServer">SQL Server</option>
+                        <option value="PostgreSql">PostgreSQL</option>
+                        <option value="MySql">MySQL</option>
+                        <option value="Sqlite">SQLite</option>
+                        <option value="InMemory">In-Memory (Testing)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Connection String</label>
+                    <input type="text" id="connectionString" placeholder="Server=localhost;Database=MyAppDb;Trusted_Connection=true;">
+                    <small style="color: #666; display: block; margin-top: 5px;">Leave empty to use default for selected provider</small>
+                </div>
+
+                <!-- Authentication Configuration -->
+                <div class="form-group">
+                    <label>🔐 Authentication</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="generateAuth" onchange="toggleAuthOptions()">
+                            <label for="generateAuth">Enable Authentication</label>
+                        </div>
+                    </div>
+                    <div id="authOptions" style="display: none; margin-top: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <label>Authentication Type</label>
+                        <select id="authType">
+                            <option value="JWT">JWT (JSON Web Token)</option>
+                            <option value="IdentityServer">Identity Server</option>
+                            <option value="AzureAD">Azure AD</option>
+                            <option value="Auth0">Auth0</option>
+                        </select>
+                        <div class="checkbox-group" style="margin-top: 10px;">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="generateIdentity">
+                                <label for="generateIdentity">Include ASP.NET Identity</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="generateRoles">
+                                <label for="generateRoles">Role-Based Authorization</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logging Configuration -->
+                <div class="form-group">
+                    <label>📝 Logging Provider</label>
+                    <select id="loggingProvider">
+                        <option value="Serilog">Serilog (Recommended)</option>
+                        <option value="NLog">NLog</option>
+                        <option value="Default">Default (.NET Logging)</option>
+                        <option value="ApplicationInsights">Application Insights</option>
+                    </select>
                 </div>
 
                 <div class="entity-list" id="entityList"></div>
@@ -344,7 +479,8 @@
 
                 <div class="form-group">
                     <label>Root Namespace</label>
-                    <input type="text" id="namespaceIncremental" value="MyApp" placeholder="e.g., MyApp">
+                    <input type="text" id="namespaceIncremental" value="MyApp" placeholder="e.g., MyApp" onblur="validateNamespace(this)">
+                    <small style="color: #666; display: block; margin-top: 5px;">Must match the existing project namespace</small>
                 </div>
 
                 <div class="form-group">
@@ -555,10 +691,14 @@
                     <!-- System Info -->
                     <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 30px; font-size: 0.85rem; color: #666;">
                         <strong>System Information:</strong><br>
-                        Generator Version: <span id="generatorVersion">2.0.0</span><br>
-                        .NET Version: <span id="dotnetVersion">9.0</span><br>
-                        Last Updated: <span id="lastUpdated">December 2024</span><br>
-                        Build: <span id="buildNumber">2024.12.10.001</span>
+                        Generator Version: <span id="generatorVersion">Loading...</span><br>
+                        .NET Version: <span id="dotnetVersion">Loading...</span><br>
+                        Runtime: <span id="runtimeVersion">Loading...</span><br>
+                        OS: <span id="osDescription">Loading...</span><br>
+                        Architecture: <span id="processArchitecture">Loading...</span><br>
+                        Last Updated: <span id="lastUpdated">Loading...</span><br>
+                        Build: <span id="buildNumber">Loading...</span><br>
+                        Build Date: <span id="buildDate">Loading...</span>
                     </div>
 
                     <!-- Links -->
@@ -594,10 +734,9 @@
                 updatePreviewEntityList();
             }
             
-            // Optional: Auto-check for updates when About tab is opened
+            // Load version info when About tab is opened
             if (tabName === 'about') {
-                // Uncomment to auto-check on tab open
-                // checkForUpdates();
+                loadVersionInfo();
             }
         }
 
@@ -669,27 +808,37 @@
                     </div>
                     <div class="property-list">
                         ${entity.properties.map((prop, idx) => `
-                            <div class="property-item">
+                            <div class="property-item" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
                                 <input type="text" value="${prop.name}" 
                                        onchange="updateProperty(${entity.id}, ${idx}, 'name', this.value)"
-                                       style="width: 150px;">
+                                       onblur="validatePropertyName(this)"
+                                       placeholder="Property Name"
+                                       style="width: 140px;">
                                 <select onchange="updateProperty(${entity.id}, ${idx}, 'type', this.value)"
-                                        style="width: 100px;">
-                                    ${['string', 'int', 'long', 'decimal', 'bool', 'DateTime', 'Guid'].map(t => 
+                                        style="width: 110px;">
+                                    ${['string', 'int', 'long', 'short', 'byte', 'decimal', 'double', 'float', 'bool', 'DateTime', 'DateTimeOffset', 'TimeSpan', 'Guid', 'byte[]', 'char'].map(t => 
                                         `<option value="${t}" ${prop.type === t ? 'selected' : ''}>${t}</option>`
                                     ).join('')}
                                 </select>
-                                <label style="font-size: 0.9rem;">
+                                <label style="font-size: 0.85rem; white-space: nowrap;">
                                     <input type="checkbox" ${prop.isKey ? 'checked' : ''}
                                            onchange="updateProperty(${entity.id}, ${idx}, 'isKey', this.checked)">
                                     Key
                                 </label>
-                                <label style="font-size: 0.9rem;">
+                                <label style="font-size: 0.85rem; white-space: nowrap;">
                                     <input type="checkbox" ${prop.isRequired ? 'checked' : ''}
                                            onchange="updateProperty(${entity.id}, ${idx}, 'isRequired', this.checked)">
                                     Required
                                 </label>
-                                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;"
+                                ${prop.type === 'string' ? `
+                                    <input type="number" value="${prop.maxLength || ''}" 
+                                           onchange="updateProperty(${entity.id}, ${idx}, 'maxLength', parseInt(this.value) || null)"
+                                           placeholder="Max Length"
+                                           style="width: 90px; font-size: 0.85rem;">
+                                ` : ''}
+                                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; margin-left: auto;"
+                                        onclick="showPropertyConstraints(${entity.id}, ${idx})">⚙️</button>
+                                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;"
                                         onclick="removeProperty(${entity.id}, ${idx})">×</button>
                             </div>
                         `).join('')}
@@ -739,7 +888,22 @@
                 generateApi: document.getElementById('genApi').checked,
                 useMediator: true,
                 useFluentValidation: true,
-                databaseProvider: 'SqlServer'
+                useAutoMapper: true,
+                databaseProvider: document.getElementById('databaseProvider').value,
+                connectionString: document.getElementById('connectionString').value || null,
+                generateAuthentication: document.getElementById('generateAuth').checked,
+                authenticationType: document.getElementById('authType').value,
+                generateIdentity: document.getElementById('generateIdentity').checked,
+                generateRoleBasedAuth: document.getElementById('generateRoles').checked,
+                loggingProvider: document.getElementById('loggingProvider').value,
+                generateSwagger: true,
+                generateHealthChecks: true,
+                generateProgramFile: true,
+                generateAppSettings: true,
+                generateProjectFiles: true,
+                generateReadme: true,
+                generateArchitectureDocs: true,
+                generateGitIgnore: true
             };
 
             const payload = {
@@ -952,27 +1116,35 @@
                     </div>
                     <div class="property-list">
                         ${entity.properties.map((prop, idx) => `
-                            <div class="property-item">
+                            <div class="property-item" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
                                 <input type="text" value="${prop.name}" 
                                        onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'name', this.value)"
-                                       style="width: 150px;">
+                                       onblur="validatePropertyName(this)"
+                                       placeholder="Property Name"
+                                       style="width: 140px;">
                                 <select onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'type', this.value)"
-                                        style="width: 100px;">
-                                    ${['string', 'int', 'long', 'decimal', 'bool', 'DateTime', 'Guid'].map(t => 
+                                        style="width: 110px;">
+                                    ${['string', 'int', 'long', 'short', 'byte', 'decimal', 'double', 'float', 'bool', 'DateTime', 'DateTimeOffset', 'TimeSpan', 'Guid', 'byte[]', 'char'].map(t => 
                                         `<option value="${t}" ${prop.type === t ? 'selected' : ''}>${t}</option>`
                                     ).join('')}
                                 </select>
-                                <label style="font-size: 0.9rem;">
+                                <label style="font-size: 0.85rem; white-space: nowrap;">
                                     <input type="checkbox" ${prop.isKey ? 'checked' : ''}
                                            onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'isKey', this.checked)">
                                     Key
                                 </label>
-                                <label style="font-size: 0.9rem;">
+                                <label style="font-size: 0.85rem; white-space: nowrap;">
                                     <input type="checkbox" ${prop.isRequired ? 'checked' : ''}
                                            onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'isRequired', this.checked)">
                                     Required
                                 </label>
-                                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;"
+                                ${prop.type === 'string' ? `
+                                    <input type="number" value="${prop.maxLength || ''}" 
+                                           onchange="updatePropertyIncremental(${entity.id}, ${idx}, 'maxLength', parseInt(this.value) || null)"
+                                           placeholder="Max Length"
+                                           style="width: 90px; font-size: 0.85rem;">
+                                ` : ''}
+                                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;"
                                         onclick="removePropertyIncremental(${entity.id}, ${idx})">×</button>
                             </div>
                         `).join('')}
@@ -1100,6 +1272,129 @@
                 }
             } catch (error) {
                 alert('Error: ' + error.message);
+            }
+        }
+
+        // Validation Functions
+        function validateNamespace(input) {
+            const value = input.value.trim();
+            const csharpIdentifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$/;
+            const reservedKeywords = ['abstract', 'as', 'base', 'bool', 'break', 'byte', 'case', 'catch', 'char', 'checked', 'class', 'const', 'continue', 'decimal', 'default', 'delegate', 'do', 'double', 'else', 'enum', 'event', 'explicit', 'extern', 'false', 'finally', 'fixed', 'float', 'for', 'foreach', 'goto', 'if', 'implicit', 'in', 'int', 'interface', 'internal', 'is', 'lock', 'long', 'namespace', 'new', 'null', 'object', 'operator', 'out', 'override', 'params', 'private', 'protected', 'public', 'readonly', 'ref', 'return', 'sbyte', 'sealed', 'short', 'sizeof', 'stackalloc', 'static', 'string', 'struct', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'uint', 'ulong', 'unchecked', 'unsafe', 'ushort', 'using', 'virtual', 'void', 'volatile', 'while'];
+            
+            if (!value) {
+                input.style.borderColor = '#dc3545';
+                return false;
+            }
+            
+            if (!csharpIdentifierRegex.test(value)) {
+                input.style.borderColor = '#dc3545';
+                alert('Invalid namespace. Must be a valid C# identifier (e.g., MyCompany.MyApp)');
+                return false;
+            }
+            
+            const parts = value.split('.');
+            for (const part of parts) {
+                if (reservedKeywords.includes(part.toLowerCase())) {
+                    input.style.borderColor = '#dc3545';
+                    alert(`"${part}" is a C# reserved keyword and cannot be used in namespace`);
+                    return false;
+                }
+            }
+            
+            input.style.borderColor = '#28a745';
+            return true;
+        }
+        
+        function validatePropertyName(input) {
+            const value = input.value.trim();
+            const csharpIdentifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+            const reservedKeywords = ['abstract', 'as', 'base', 'bool', 'break', 'byte', 'case', 'catch', 'char', 'checked', 'class', 'const', 'continue', 'decimal', 'default', 'delegate', 'do', 'double', 'else', 'enum', 'event', 'explicit', 'extern', 'false', 'finally', 'fixed', 'float', 'for', 'foreach', 'goto', 'if', 'implicit', 'in', 'int', 'interface', 'internal', 'is', 'lock', 'long', 'namespace', 'new', 'null', 'object', 'operator', 'out', 'override', 'params', 'private', 'protected', 'public', 'readonly', 'ref', 'return', 'sbyte', 'sealed', 'short', 'sizeof', 'stackalloc', 'static', 'string', 'struct', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'uint', 'ulong', 'unchecked', 'unsafe', 'ushort', 'using', 'virtual', 'void', 'volatile', 'while'];
+            
+            if (!value) {
+                input.style.borderColor = '#dc3545';
+                return false;
+            }
+            
+            if (!csharpIdentifierRegex.test(value)) {
+                input.style.borderColor = '#dc3545';
+                return false;
+            }
+            
+            if (reservedKeywords.includes(value.toLowerCase())) {
+                input.style.borderColor = '#dc3545';
+                alert(`"${value}" is a C# reserved keyword. Please choose a different name.`);
+                return false;
+            }
+            
+            input.style.borderColor = '#28a745';
+            return true;
+        }
+        
+        // Helper Functions
+        function toggleAuthOptions() {
+            const authOptions = document.getElementById('authOptions');
+            const generateAuth = document.getElementById('generateAuth');
+            authOptions.style.display = generateAuth.checked ? 'block' : 'none';
+        }
+        
+        function updateConnectionStringPlaceholder() {
+            const provider = document.getElementById('databaseProvider').value;
+            const input = document.getElementById('connectionString');
+            
+            const placeholders = {
+                'SqlServer': 'Server=localhost;Database=MyAppDb;Trusted_Connection=true;TrustServerCertificate=true;',
+                'PostgreSql': 'Host=localhost;Database=myappdb;Username=postgres;Password=postgres',
+                'MySql': 'Server=localhost;Database=myappdb;User=root;Password=root;',
+                'Sqlite': 'Data Source=myappdb.db',
+                'InMemory': 'Not required for In-Memory database'
+            };
+            
+            input.placeholder = placeholders[provider] || '';
+            if (provider === 'InMemory') {
+                input.disabled = true;
+                input.value = '';
+            } else {
+                input.disabled = false;
+            }
+        }
+        
+        function showPropertyConstraints(entityId, propIdx) {
+            alert('Advanced property constraints coming soon!\n\nPlanned features:\n- Min/Max Length\n- Range validation\n- Regex patterns\n- Default values\n- Foreign keys\n- Navigation properties');
+        }
+
+        // Load Version Information
+        async function loadVersionInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/version`);
+                const versionData = await response.json();
+                
+                // Update UI with actual version information
+                document.getElementById('generatorVersion').textContent = versionData.version;
+                document.getElementById('dotnetVersion').textContent = versionData.dotnetVersion;
+                document.getElementById('runtimeVersion').textContent = versionData.runtimeVersion;
+                document.getElementById('osDescription').textContent = versionData.osDescription;
+                document.getElementById('processArchitecture').textContent = versionData.processArchitecture;
+                document.getElementById('lastUpdated').textContent = versionData.lastUpdated;
+                document.getElementById('buildNumber').textContent = versionData.buildNumber;
+                document.getElementById('buildDate').textContent = new Date(versionData.buildDate).toLocaleDateString();
+                
+                // Update version in header
+                const versionHeader = document.querySelector('#about-tab h3');
+                if (versionHeader) {
+                    versionHeader.textContent = `v${versionData.version}`;
+                }
+                
+                console.log('Version info loaded:', versionData);
+            } catch (error) {
+                console.error('Failed to load version info:', error);
+                document.getElementById('generatorVersion').textContent = 'Error loading';
+                document.getElementById('dotnetVersion').textContent = 'Error loading';
+                document.getElementById('runtimeVersion').textContent = 'Error loading';
+                document.getElementById('osDescription').textContent = 'Error loading';
+                document.getElementById('processArchitecture').textContent = 'Error loading';
+                document.getElementById('lastUpdated').textContent = 'Error loading';
+                document.getElementById('buildNumber').textContent = 'Error loading';
+                document.getElementById('buildDate').textContent = 'Error loading';
             }
         }
 
