@@ -660,6 +660,11 @@ public class CodeGenController : ControllerBase
         var vscodeQuickStart = MyCodeGent.Templates.QuickStartTemplate.GenerateVSCodeGuide(config);
         await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "QUICKSTART-VSCODE.md"), vscodeQuickStart);
         _logger.LogInformation("Generated Quick Start Guides");
+        
+        // Generate Solution File
+        var solutionFile = MyCodeGent.Templates.SolutionTemplate.GenerateSolutionFile(config);
+        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, $"{config.RootNamespace}.sln"), solutionFile);
+        _logger.LogInformation("Generated Solution File");
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)
