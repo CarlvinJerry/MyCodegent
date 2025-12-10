@@ -544,6 +544,34 @@ public class CodeGenController : ControllerBase
         var seedData = MyCodeGent.Templates.SeedDataTemplate.Generate(entities, config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(seedDataPath, "ApplicationDbContextSeed.cs"), seedData);
         _logger.LogInformation("Generated Seed Data");
+        
+        // Generate Health Checks
+        var healthChecksPath = Path.Combine(config.OutputPath, "Infrastructure", "HealthChecks");
+        var healthCheck = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateHealthChecks(config.RootNamespace, config.DatabaseProvider);
+        await _fileWriter.WriteFileAsync(Path.Combine(healthChecksPath, "DatabaseHealthCheck.cs"), healthCheck);
+        _logger.LogInformation("Generated Health Checks");
+        
+        // Generate Exception Handling Middleware
+        var middlewarePath = Path.Combine(config.OutputPath, "Api", "Middleware");
+        var exceptionMiddleware = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateExceptionMiddleware(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(middlewarePath, "ExceptionHandlingMiddleware.cs"), exceptionMiddleware);
+        _logger.LogInformation("Generated Exception Handling Middleware");
+        
+        // Generate CORS Configuration
+        var configPath = Path.Combine(config.OutputPath, "Api", "Configuration");
+        var corsConfig = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateCorsConfiguration(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(configPath, "CorsConfiguration.cs"), corsConfig);
+        _logger.LogInformation("Generated CORS Configuration");
+        
+        // Generate Logging Configuration
+        var loggingConfig = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateLoggingConfiguration(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(configPath, "LoggingConfiguration.cs"), loggingConfig);
+        _logger.LogInformation("Generated Logging Configuration");
+        
+        // Generate appsettings.json
+        var appSettings = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateAppSettingsJson(config.RootNamespace, config.DatabaseProvider);
+        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "Api", "appsettings.json"), appSettings);
+        _logger.LogInformation("Generated appsettings.json");
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)
