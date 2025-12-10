@@ -16,14 +16,14 @@ public class CodeGenController : ControllerBase
     private readonly IFileWriter _fileWriter;
     private readonly ILogger<CodeGenController> _logger;
     private readonly IVersionService _versionService;
-    private readonly Core.Services.IGitService _gitService;
+    private readonly MyCodeGent.Core.Services.IGitService _gitService;
 
     public CodeGenController(
         ICodeGenerator codeGenerator,
         IFileWriter fileWriter,
         ILogger<CodeGenController> logger,
         IVersionService versionService,
-        Core.Services.IGitService gitService)
+        MyCodeGent.Core.Services.IGitService gitService)
     {
         _codeGenerator = codeGenerator;
         _fileWriter = fileWriter;
@@ -71,6 +71,8 @@ public class CodeGenController : ControllerBase
                 request.Entities.Count, sessionId, webConfig.OutputPath);
 
             var generatedFiles = new List<GeneratedFile>();
+            var gitInitialized = false;
+            var gitCommitted = false;
             
             try
             {
@@ -107,8 +109,6 @@ public class CodeGenController : ControllerBase
                 
                 // Initialize Git and commit
                 _logger.LogDebug("Initializing Git repository...");
-                var gitInitialized = false;
-                var gitCommitted = false;
                 
                 if (_gitService.IsGitInstalled())
                 {

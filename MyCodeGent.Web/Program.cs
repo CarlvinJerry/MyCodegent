@@ -57,7 +57,7 @@ builder.Services.AddCors(options =>
 // Register MyCodeGent services
 builder.Services.AddScoped<IFileWriter, FileWriter>();
 builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
-builder.Services.AddSingleton<Core.Services.IGitService, Core.Services.GitService>();
+builder.Services.AddSingleton<MyCodeGent.Core.Services.IGitService, MyCodeGent.Core.Services.GitService>();
 
 var app = builder.Build();
 
