@@ -930,6 +930,173 @@
             color: #1976d2;
             font-size: 0.95rem;
         }
+
+        /* Database Diagram */
+        .diagram-container {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 400px;
+            overflow: auto;
+        }
+
+        .diagram-entity {
+            position: absolute;
+            background: white;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            min-width: 200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: move;
+            user-select: none;
+        }
+
+        .diagram-entity-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diagram-entity-body {
+            padding: 8px;
+        }
+
+        .diagram-property {
+            padding: 6px 8px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diagram-property:last-child {
+            border-bottom: none;
+        }
+
+        .diagram-property-icon {
+            font-size: 0.75rem;
+        }
+
+        .diagram-property-name {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .diagram-property-type {
+            color: #666;
+            font-size: 0.75rem;
+        }
+
+        .diagram-relationship-line {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .diagram-controls {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .diagram-legend {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .diagram-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .diagram-badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #4caf50;
+            color: white;
+        }
+
+        .diagram-badge.fk {
+            background: #ff9800;
+        }
+
+        .diagram-badge.bk {
+            background: #9c27b0;
+        }
+
+        /* Relationship Type Indicators */
+        .relationship-label {
+            position: absolute;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #2196f3;
+            border: 1px solid #2196f3;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .relationship-label.one-to-many {
+            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+            color: white;
+            border-color: #4caf50;
+        }
+
+        .relationship-label.many-to-one {
+            background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+            color: white;
+            border-color: #ff9800;
+        }
+
+        .relationship-label.one-to-one {
+            background: linear-gradient(135deg, #2196f3 0%, #03a9f4 100%);
+            color: white;
+            border-color: #2196f3;
+        }
+
+        .relationship-label.many-to-many {
+            background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%);
+            color: white;
+            border-color: #9c27b0;
+        }
+
+        .diagram-entity:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagram-controls button {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.14);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .diagram-controls button:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
@@ -1463,13 +1630,75 @@
             </div>
 
             <div id="preview-tab" class="tab-content">
-                <div class="form-group">
-                    <label>Select Entity to Preview</label>
-                    <select id="previewEntity" onchange="loadPreview()">
-                        <option value="">-- Select Entity --</option>
-                    </select>
+                <h2 style="color: var(--primary-color); margin-bottom: 20px;">📋 Preview & Diagram</h2>
+                
+                <!-- Sub-tabs for Preview -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                    <button class="tab active" onclick="switchPreviewSubTab('code')" id="preview-code-tab" 
+                            style="border-bottom: 3px solid var(--primary-color);">
+                        💻 Code Preview
+                    </button>
+                    <button class="tab" onclick="switchPreviewSubTab('diagram')" id="preview-diagram-tab"
+                            style="border-bottom: 3px solid transparent;">
+                        📊 Database Diagram
+                    </button>
                 </div>
-                <div id="previewContent" class="preview-grid"></div>
+
+                <!-- Code Preview Sub-tab -->
+                <div id="preview-code-content" class="preview-sub-content">
+                    <div class="form-group">
+                        <label>Select Entity to Preview</label>
+                        <select id="previewEntity" onchange="loadPreview()">
+                            <option value="">-- Select Entity --</option>
+                        </select>
+                    </div>
+                    <div id="previewContent" class="preview-grid"></div>
+                </div>
+
+                <!-- Diagram Sub-tab -->
+                <div id="preview-diagram-content" class="preview-sub-content" style="display: none;">
+                <h2 style="color: var(--primary-color); margin-bottom: 20px;">📊 Database Diagram</h2>
+                
+                <div class="diagram-controls">
+                    <button class="btn btn-primary" onclick="generateDiagram()">🔄 Generate Diagram</button>
+                    <button class="btn btn-secondary" onclick="autoLayoutDiagram()">📐 Auto Layout</button>
+                    <button class="btn btn-secondary" onclick="resetDiagramZoom()">🔍 Reset Zoom</button>
+                    
+                    <div style="flex: 1;"></div>
+                    
+                    <div class="diagram-legend">
+                        <div class="diagram-legend-item">
+                            <span class="diagram-badge">PK</span> Primary Key
+                        </div>
+                        <div class="diagram-legend-item">
+                            <span class="diagram-badge fk">FK</span> Foreign Key
+                        </div>
+                        <div class="diagram-legend-item">
+                            <span class="diagram-badge bk">BK</span> Business Key
+                        </div>
+                        <div class="diagram-legend-item">
+                            <span style="display: inline-block; width: 30px; height: 2px; background: #4caf50; vertical-align: middle;"></span> 1→∞
+                        </div>
+                        <div class="diagram-legend-item">
+                            <span style="display: inline-block; width: 30px; height: 2px; background: #ff9800; vertical-align: middle;"></span> ∞→1
+                        </div>
+                        <div class="diagram-legend-item">
+                            <span style="display: inline-block; width: 30px; height: 2px; background: #2196f3; vertical-align: middle;"></span> 1→1
+                        </div>
+                        <div class="diagram-legend-item">
+                            <span style="display: inline-block; width: 30px; height: 2px; background: #9c27b0; border-top: 2px dashed #9c27b0; vertical-align: middle;"></span> ∞↔∞
+                        </div>
+                    </div>
+                </div>
+
+                <div id="diagramCanvas" class="diagram-container">
+                    <div style="text-align: center; padding: 100px 20px; color: #999;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">📊</div>
+                        <h3 style="margin: 0 0 10px 0;">No Diagram Generated</h3>
+                        <p>Click "Generate Diagram" to visualize your database schema</p>
+                    </div>
+                </div>
+                </div>
             </div>
 
             <div id="about-tab" class="tab-content">
@@ -1549,19 +1778,60 @@
         window.addEventListener('DOMContentLoaded', loadPreferences);
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
             
-            event.target.classList.add('active');
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
             document.getElementById(tabName + '-tab').classList.add('active');
-
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Update preview entity list if preview tab
             if (tabName === 'preview') {
                 updatePreviewEntityList();
+                // Default to code sub-tab
+                switchPreviewSubTab('code');
             }
             
             // Load version info when About tab is opened
             if (tabName === 'about') {
                 loadVersionInfo();
+            }
+        }
+
+        function switchPreviewSubTab(subTab) {
+            // Hide all sub-tab contents
+            document.querySelectorAll('.preview-sub-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Remove active styling from all sub-tab buttons
+            document.getElementById('preview-code-tab').style.borderBottomColor = 'transparent';
+            document.getElementById('preview-diagram-tab').style.borderBottomColor = 'transparent';
+            document.getElementById('preview-code-tab').classList.remove('active');
+            document.getElementById('preview-diagram-tab').classList.remove('active');
+
+            // Show selected sub-tab
+            if (subTab === 'code') {
+                document.getElementById('preview-code-content').style.display = 'block';
+                document.getElementById('preview-code-tab').style.borderBottomColor = 'var(--primary-color)';
+                document.getElementById('preview-code-tab').classList.add('active');
+            } else if (subTab === 'diagram') {
+                document.getElementById('preview-diagram-content').style.display = 'block';
+                document.getElementById('preview-diagram-tab').style.borderBottomColor = 'var(--primary-color)';
+                document.getElementById('preview-diagram-tab').classList.add('active');
+                // Auto-generate diagram when switching to it
+                if (entities.length > 0) {
+                    generateDiagram();
+                }
             }
         }
 
@@ -2708,6 +2978,272 @@
             currentBusinessKeysEntity = null;
             currentBusinessKeysIsIncremental = false;
             selectedBusinessKeys = [];
+        }
+
+        // Database Diagram Functions
+        let diagramEntities = [];
+        let draggedEntity = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        function generateDiagram() {
+            const canvas = document.getElementById('diagramCanvas');
+            
+            if (entities.length === 0) {
+                canvas.innerHTML = `
+                    <div style="text-align: center; padding: 100px 20px; color: #999;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
+                        <h3 style="margin: 0 0 10px 0;">No Entities Defined</h3>
+                        <p>Create some entities first to generate a diagram</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Clear canvas
+            canvas.innerHTML = '';
+            canvas.style.position = 'relative';
+            canvas.style.minHeight = '600px';
+
+            // Position entities in a grid
+            const gridCols = Math.ceil(Math.sqrt(entities.length));
+            const spacing = { x: 280, y: 300 };
+            const offset = { x: 50, y: 50 };
+
+            entities.forEach((entity, idx) => {
+                const col = idx % gridCols;
+                const row = Math.floor(idx / gridCols);
+                const x = offset.x + (col * spacing.x);
+                const y = offset.y + (row * spacing.y);
+
+                createDiagramEntity(entity, x, y, canvas);
+            });
+
+            // Draw relationship lines
+            drawRelationshipLines(canvas);
+        }
+
+        function createDiagramEntity(entity, x, y, canvas) {
+            const entityDiv = document.createElement('div');
+            entityDiv.className = 'diagram-entity';
+            entityDiv.style.left = x + 'px';
+            entityDiv.style.top = y + 'px';
+            entityDiv.dataset.entityId = entity.id;
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'diagram-entity-header';
+            header.innerHTML = `
+                <span>${entity.name}</span>
+                <span style="font-size: 0.8rem; opacity: 0.9;">${entity.properties?.length || 0} props</span>
+            `;
+            entityDiv.appendChild(header);
+
+            // Body with properties
+            const body = document.createElement('div');
+            body.className = 'diagram-entity-body';
+
+            if (entity.properties && entity.properties.length > 0) {
+                entity.properties.forEach(prop => {
+                    const propDiv = document.createElement('div');
+                    propDiv.className = 'diagram-property';
+
+                    // Determine badges
+                    let badges = [];
+                    if (prop.isKey) badges.push('<span class="diagram-badge">PK</span>');
+                    
+                    // Check if it's a foreign key
+                    const isForeignKey = entity.relationships?.some(rel => 
+                        rel.foreignKeyProperty === prop.name
+                    );
+                    if (isForeignKey) badges.push('<span class="diagram-badge fk">FK</span>');
+                    
+                    // Check if it's a business key
+                    const isBusinessKey = entity.businessKeys?.includes(prop.name);
+                    if (isBusinessKey) badges.push('<span class="diagram-badge bk">BK</span>');
+
+                    // Property icon
+                    let icon = '○';
+                    if (prop.isKey) icon = '🔑';
+                    else if (isForeignKey) icon = '🔗';
+                    else if (prop.isRequired) icon = '●';
+
+                    propDiv.innerHTML = `
+                        <span class="diagram-property-icon">${icon}</span>
+                        <span class="diagram-property-name">${prop.name}</span>
+                        <span class="diagram-property-type">${prop.type}</span>
+                        ${badges.join(' ')}
+                    `;
+                    body.appendChild(propDiv);
+                });
+            }
+
+            entityDiv.appendChild(body);
+
+            // Make draggable
+            entityDiv.addEventListener('mousedown', startDrag);
+
+            canvas.appendChild(entityDiv);
+        }
+
+        function startDrag(e) {
+            if (e.target.closest('.diagram-entity-header')) {
+                draggedEntity = e.currentTarget;
+                const rect = draggedEntity.getBoundingClientRect();
+                const canvas = document.getElementById('diagramCanvas');
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', stopDrag);
+                
+                draggedEntity.style.zIndex = '1000';
+            }
+        }
+
+        function drag(e) {
+            if (!draggedEntity) return;
+            
+            const canvas = document.getElementById('diagramCanvas');
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            let x = e.clientX - canvasRect.left - dragOffset.x;
+            let y = e.clientY - canvasRect.top - dragOffset.y;
+
+            // Keep within bounds
+            x = Math.max(0, Math.min(x, canvasRect.width - draggedEntity.offsetWidth));
+            y = Math.max(0, Math.min(y, canvasRect.height - draggedEntity.offsetHeight));
+
+            draggedEntity.style.left = x + 'px';
+            draggedEntity.style.top = y + 'px';
+
+            // Redraw relationship lines
+            drawRelationshipLines(canvas);
+        }
+
+        function stopDrag() {
+            if (draggedEntity) {
+                draggedEntity.style.zIndex = '';
+                draggedEntity = null;
+            }
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        function drawRelationshipLines(canvas) {
+            // Remove existing lines and labels
+            canvas.querySelectorAll('.diagram-relationship-line').forEach(line => line.remove());
+            canvas.querySelectorAll('.relationship-label').forEach(label => label.remove());
+
+            // Draw lines for each relationship
+            entities.forEach(entity => {
+                if (!entity.relationships) return;
+
+                entity.relationships.forEach(rel => {
+                    const sourceDiv = canvas.querySelector(`[data-entity-id="${entity.id}"]`);
+                    const targetEntity = entities.find(e => e.id === rel.relatedEntityId);
+                    if (!targetEntity) return;
+
+                    const targetDiv = canvas.querySelector(`[data-entity-id="${targetEntity.id}"]`);
+                    if (!sourceDiv || !targetDiv) return;
+
+                    drawLine(sourceDiv, targetDiv, rel.type, canvas);
+                });
+            });
+        }
+
+        function drawLine(source, target, relType, canvas) {
+            const sourceRect = source.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+
+            const x1 = sourceRect.left + sourceRect.width / 2 - canvasRect.left;
+            const y1 = sourceRect.top + sourceRect.height / 2 - canvasRect.top;
+            const x2 = targetRect.left + targetRect.width / 2 - canvasRect.left;
+            const y2 = targetRect.top + targetRect.height / 2 - canvasRect.top;
+
+            // Determine line color and style based on relationship type
+            let strokeColor, dashArray, labelText, labelClass;
+            
+            switch(relType) {
+                case 'OneToMany':
+                    strokeColor = '#4caf50';
+                    dashArray = '0';
+                    labelText = '1→∞';
+                    labelClass = 'one-to-many';
+                    break;
+                case 'ManyToOne':
+                    strokeColor = '#ff9800';
+                    dashArray = '0';
+                    labelText = '∞→1';
+                    labelClass = 'many-to-one';
+                    break;
+                case 'OneToOne':
+                    strokeColor = '#2196f3';
+                    dashArray = '0';
+                    labelText = '1→1';
+                    labelClass = 'one-to-one';
+                    break;
+                case 'ManyToMany':
+                    strokeColor = '#9c27b0';
+                    dashArray = '5,5';
+                    labelText = '∞↔∞';
+                    labelClass = 'many-to-many';
+                    break;
+                default:
+                    strokeColor = '#2196f3';
+                    dashArray = '0';
+                    labelText = '';
+                    labelClass = '';
+            }
+
+            // Create SVG line
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.classList.add('diagram-relationship-line');
+            svg.style.position = 'absolute';
+            svg.style.left = '0';
+            svg.style.top = '0';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.pointerEvents = 'none';
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', strokeColor);
+            line.setAttribute('stroke-width', '3');
+            line.setAttribute('stroke-dasharray', dashArray);
+
+            svg.appendChild(line);
+            canvas.appendChild(svg);
+
+            // Add relationship type label at midpoint
+            if (labelText) {
+                const midX = (x1 + x2) / 2;
+                const midY = (y1 + y2) / 2;
+
+                const label = document.createElement('div');
+                label.className = `relationship-label ${labelClass}`;
+                label.textContent = labelText;
+                label.style.left = midX + 'px';
+                label.style.top = midY + 'px';
+                label.style.transform = 'translate(-50%, -50%)';
+
+                canvas.appendChild(label);
+            }
+        }
+
+        function autoLayoutDiagram() {
+            generateDiagram();
+        }
+
+        function resetDiagramZoom() {
+            const canvas = document.getElementById('diagramCanvas');
+            canvas.scrollTop = 0;
+            canvas.scrollLeft = 0;
         }
 
         // Load Version Information and Build About Page
