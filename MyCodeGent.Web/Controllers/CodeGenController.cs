@@ -338,6 +338,17 @@ public class CodeGenController : ControllerBase
             osDescription = versionInfo.OsDescription,
             processArchitecture = versionInfo.ProcessArchitecture,
             lastUpdated = versionInfo.LastUpdated,
+            git = new
+            {
+                branch = versionInfo.GitBranch,
+                commitHash = versionInfo.GitCommitHash,
+                commitDate = versionInfo.GitCommitDate,
+                commitMessage = versionInfo.GitCommitMessage,
+                commitAuthor = versionInfo.GitCommitAuthor,
+                tag = versionInfo.GitTag,
+                isClean = versionInfo.GitIsClean,
+                commitCount = versionInfo.GitCommitCount
+            },
             features = new
             {
                 completeAppGeneration = true,
