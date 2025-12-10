@@ -807,7 +807,13 @@
 
                 <div class="form-group">
                     <label>📁 Existing Project Path</label>
-                    <input type="text" id="projectPath" placeholder="e.g., C:/MyProjects/MyApp/Generated">
+                    <div style="display: flex; gap: 10px; align-items: flex-start;">
+                        <input type="text" id="projectPath" placeholder="e.g., C:/MyProjects/MyApp/Generated" style="flex: 1;">
+                        <button type="button" class="btn btn-secondary" onclick="browseProjectPath()" style="white-space: nowrap; margin: 0;">
+                            📂 Browse
+                        </button>
+                    </div>
+                    <input type="file" id="projectPathBrowser" webkitdirectory directory multiple style="display: none;" onchange="handleProjectPathSelected(event)">
                     <small style="color: #666; display: block; margin-top: 5px;">
                         Full path to your existing generated project folder
                     </small>
@@ -1504,6 +1510,60 @@
                 }
             } catch (error) {
                 alert('Error: ' + error.message);
+            }
+        }
+
+        // Project Path Browser Functions
+        function browseProjectPath() {
+            const fileInput = document.getElementById('projectPathBrowser');
+            // Reset the input to allow selecting the same folder again
+            fileInput.value = '';
+            fileInput.click();
+        }
+
+        function handleProjectPathSelected(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                // Get the path from the first file's webkitRelativePath
+                const firstFile = files[0];
+                let path = '';
+                
+                if (firstFile.webkitRelativePath) {
+                    // Extract folder path from webkitRelativePath
+                    // Format: FolderName/SubFolder/FileName.ext
+                    const fullPath = firstFile.webkitRelativePath;
+                    const pathParts = fullPath.split('/');
+                    
+                    // Remove the filename (last part) to get folder path
+                    if (pathParts.length > 1) {
+                        pathParts.pop();
+                        path = pathParts.join('/');
+                    } else {
+                        path = pathParts[0];
+                    }
+                } else {
+                    // Fallback: just use the folder name
+                    path = firstFile.name.split('/')[0];
+                }
+                
+                // Set the path in the input
+                const pathInput = document.getElementById('projectPath');
+                pathInput.value = path;
+                
+                // Visual feedback (green border)
+                pathInput.style.borderColor = '#4caf50';
+                pathInput.style.borderWidth = '2px';
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    pathInput.style.borderColor = '';
+                    pathInput.style.borderWidth = '';
+                }, 2000);
+                
+                // Clear the file input to prevent any upload attempts
+                event.target.value = '';
+                
+                console.log('Selected folder path:', path);
             }
         }
 

@@ -3,6 +3,7 @@ using MyCodeGent.Core.Interfaces;
 using MyCodeGent.Web.Models;
 using MyCodeGent.Web.Services;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using TemplateModels = MyCodeGent.Templates.Models;
 
 namespace MyCodeGent.Web.Controllers;
@@ -324,54 +325,107 @@ public class CodeGenController : ControllerBase
     [HttpGet("version")]
     public IActionResult GetVersion()
     {
-        var versionInfo = _versionService.GetVersionInfo();
-        
-        return Ok(new
+        try
         {
-            version = versionInfo.Version,
-            releaseDate = versionInfo.BuildDate.ToString("yyyy-MM-dd"),
-            buildNumber = versionInfo.BuildNumber,
-            buildDate = versionInfo.BuildDate,
-            codeName = "Complete Application Generator",
-            dotnetVersion = versionInfo.DotNetVersion,
-            runtimeVersion = versionInfo.RuntimeVersion,
-            osDescription = versionInfo.OsDescription,
-            processArchitecture = versionInfo.ProcessArchitecture,
-            lastUpdated = versionInfo.LastUpdated,
-            git = new
+            var versionInfo = _versionService.GetVersionInfo();
+            
+            return Ok(new
             {
-                branch = versionInfo.GitBranch,
-                commitHash = versionInfo.GitCommitHash,
-                commitDate = versionInfo.GitCommitDate,
-                commitMessage = versionInfo.GitCommitMessage,
-                commitAuthor = versionInfo.GitCommitAuthor,
-                tag = versionInfo.GitTag,
-                isClean = versionInfo.GitIsClean,
-                commitCount = versionInfo.GitCommitCount
-            },
-            features = new
+                version = versionInfo.Version ?? "2.0.0",
+                releaseDate = versionInfo.BuildDate.ToString("yyyy-MM-dd"),
+                buildNumber = versionInfo.BuildNumber ?? "2024.12.10.001",
+                buildDate = versionInfo.BuildDate,
+                codeName = "Complete Application Generator",
+                dotnetVersion = versionInfo.DotNetVersion ?? "9.0",
+                runtimeVersion = versionInfo.RuntimeVersion ?? ".NET 9.0",
+                osDescription = versionInfo.OsDescription ?? "Unknown",
+                processArchitecture = versionInfo.ProcessArchitecture ?? "X64",
+                lastUpdated = versionInfo.LastUpdated ?? "December 2024",
+                git = new
+                {
+                    branch = versionInfo.GitBranch ?? "",
+                    commitHash = versionInfo.GitCommitHash ?? "",
+                    commitDate = versionInfo.GitCommitDate,
+                    commitMessage = versionInfo.GitCommitMessage ?? "",
+                    commitAuthor = versionInfo.GitCommitAuthor ?? "",
+                    tag = versionInfo.GitTag ?? "",
+                    isClean = versionInfo.GitIsClean,
+                    commitCount = versionInfo.GitCommitCount
+                },
+                features = new
+                {
+                    completeAppGeneration = true,
+                    incrementalGeneration = true,
+                    databaseProviders = new[] { "SqlServer", "PostgreSql", "MySql", "Sqlite", "InMemory" },
+                    authentication = new[] { "JWT", "Identity", "AzureAD", "Auth0" },
+                    logging = new[] { "Serilog", "NLog", "Default", "ApplicationInsights" },
+                    documentation = true,
+                    swagger = true,
+                    healthChecks = true,
+                    propertyTypes = 15,
+                    validation = true
+                },
+                packages = new
+                {
+                    MediatR = "12.4.1",
+                    FluentValidation = "11.11.0",
+                    AutoMapper = "13.0.1",
+                    Swashbuckle = "7.2.0",
+                    EntityFrameworkCore = "9.0.0",
+                    Serilog = "8.0.3"
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new
             {
-                completeAppGeneration = true,
-                incrementalGeneration = true,
-                databaseProviders = new[] { "SqlServer", "PostgreSql", "MySql", "Sqlite", "InMemory" },
-                authentication = new[] { "JWT", "Identity", "AzureAD", "Auth0" },
-                logging = new[] { "Serilog", "NLog", "Default", "ApplicationInsights" },
-                documentation = true,
-                swagger = true,
-                healthChecks = true,
-                propertyTypes = 15,
-                validation = true
-            },
-            packages = new
-            {
-                MediatR = "12.4.1",
-                FluentValidation = "11.11.0",
-                AutoMapper = "13.0.1",
-                Swashbuckle = "7.2.0",
-                EntityFrameworkCore = "9.0.0",
-                Serilog = "8.0.3"
-            }
-        });
+                version = "2.0.0",
+                releaseDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                buildNumber = "2024.12.10.001",
+                buildDate = DateTime.Now,
+                codeName = "Complete Application Generator",
+                dotnetVersion = "9.0",
+                runtimeVersion = ".NET 9.0",
+                osDescription = Environment.OSVersion.ToString(),
+                processArchitecture = RuntimeInformation.ProcessArchitecture.ToString(),
+                lastUpdated = "December 2024",
+                git = new
+                {
+                    branch = "",
+                    commitHash = "",
+                    commitDate = DateTime.MinValue,
+                    commitMessage = "",
+                    commitAuthor = "",
+                    tag = "",
+                    isClean = true,
+                    commitCount = 0
+                },
+                features = new
+                {
+                    completeAppGeneration = true,
+                    incrementalGeneration = true,
+                    databaseProviders = new[] { "SqlServer", "PostgreSql", "MySql", "Sqlite", "InMemory" },
+                    authentication = new[] { "JWT", "Identity", "AzureAD", "Auth0" },
+                    logging = new[] { "Serilog", "NLog", "Default", "ApplicationInsights" },
+                    documentation = true,
+                    swagger = true,
+                    healthChecks = true,
+                    propertyTypes = 15,
+                    validation = true
+                },
+                packages = new
+                {
+                    MediatR = "12.4.1",
+                    FluentValidation = "11.11.0",
+                    AutoMapper = "13.0.1",
+                    Swashbuckle = "7.2.0",
+                    EntityFrameworkCore = "9.0.0",
+                    Serilog = "8.0.3"
+                },
+                error = ex.Message
+            });
+        }
     }
 
     [HttpGet("sample-config")]
