@@ -16,17 +16,20 @@ public class CodeGenController : ControllerBase
     private readonly IFileWriter _fileWriter;
     private readonly ILogger<CodeGenController> _logger;
     private readonly IVersionService _versionService;
+    private readonly Core.Services.IGitService _gitService;
 
     public CodeGenController(
         ICodeGenerator codeGenerator,
         IFileWriter fileWriter,
         ILogger<CodeGenController> logger,
-        IVersionService versionService)
+        IVersionService versionService,
+        Core.Services.IGitService gitService)
     {
         _codeGenerator = codeGenerator;
         _fileWriter = fileWriter;
         _logger = logger;
         _versionService = versionService;
+        _gitService = gitService;
     }
 
     [HttpPost("generate")]
@@ -101,6 +104,30 @@ public class CodeGenController : ControllerBase
                 generatedFiles = await CollectGeneratedFilesAsync(webConfig.OutputPath);
                 
                 _logger.LogInformation("Code generation completed successfully. Generated {FileCount} files", generatedFiles.Count);
+                
+                // Initialize Git and commit
+                _logger.LogDebug("Initializing Git repository...");
+                var gitInitialized = false;
+                var gitCommitted = false;
+                
+                if (_gitService.IsGitInstalled())
+                {
+                    gitInitialized = await _gitService.InitializeRepositoryAsync(webConfig.OutputPath);
+                    
+                    if (gitInitialized)
+                    {
+                        var commitMessage = $"Initial commit: Generated {templateEntities.Count} entities with MyCodeGent\n\n" +
+                                          $"Entities: {string.Join(", ", templateEntities.Select(e => e.Name))}\n" +
+                                          $"Generated: {generatedFiles.Count} files\n" +
+                                          $"Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC";
+                        
+                        gitCommitted = await _gitService.CommitChangesAsync(webConfig.OutputPath, commitMessage);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Git is not installed. Skipping repository initialization.");
+                }
             }
             catch (Exception genEx)
             {
@@ -113,7 +140,12 @@ public class CodeGenController : ControllerBase
                 sessionId,
                 filesGenerated = generatedFiles.Count,
                 files = generatedFiles,
-                downloadUrl = $"/api/codegen/download/{sessionId}"
+                downloadUrl = $"/api/codegen/download/{sessionId}",
+                git = new
+                {
+                    initialized = gitInitialized,
+                    committed = gitCommitted
+                }
             });
         }
         catch (Exception ex)
@@ -572,6 +604,11 @@ public class CodeGenController : ControllerBase
         var appSettings = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateAppSettingsJson(config.RootNamespace, config.DatabaseProvider);
         await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "Api", "appsettings.json"), appSettings);
         _logger.LogInformation("Generated appsettings.json");
+        
+        // Generate Swagger Configuration
+        var swaggerConfig = MyCodeGent.Templates.SwaggerTemplate.GenerateSwaggerConfiguration(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(configPath, "SwaggerConfiguration.cs"), swaggerConfig);
+        _logger.LogInformation("Generated Swagger Configuration");
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)
