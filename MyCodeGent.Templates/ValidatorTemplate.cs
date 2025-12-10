@@ -20,32 +20,89 @@ public static class ValidatorTemplate
         
         foreach (var prop in entity.Properties.Where(p => !p.IsKey))
         {
+            var hasRules = prop.IsRequired || prop.MaxLength.HasValue || prop.Constraints != null;
+            if (!hasRules) continue;
+            
+            sb.AppendLine($"        RuleFor(x => x.{prop.Name})");
+            
+            // Required validation
             if (prop.IsRequired)
             {
-                sb.AppendLine($"        RuleFor(x => x.{prop.Name})");
                 sb.AppendLine("            .NotEmpty()");
+            }
+            
+            // String constraints
+            if (prop.Type == "string" && prop.Constraints != null)
+            {
+                if (!string.IsNullOrEmpty(prop.Constraints.MinLength))
+                {
+                    sb.AppendLine($"            .MinimumLength({prop.Constraints.MinLength})");
+                }
                 
-                if (prop.MaxLength.HasValue)
+                if (!string.IsNullOrEmpty(prop.Constraints.MaxLength))
+                {
+                    sb.AppendLine($"            .MaximumLength({prop.Constraints.MaxLength})");
+                }
+                else if (prop.MaxLength.HasValue)
                 {
                     sb.AppendLine($"            .MaximumLength({prop.MaxLength.Value})");
                 }
                 
-                sb.AppendLine($"            .WithMessage(\"{prop.Name} is required.\");");
-                sb.AppendLine();
+                if (!string.IsNullOrEmpty(prop.Constraints.RegexPattern))
+                {
+                    var escapedPattern = prop.Constraints.RegexPattern.Replace("\\", "\\\\").Replace("\"", "\\\"");
+                    sb.AppendLine($"            .Matches(@\"{escapedPattern}\")");
+                }
+                
+                // Email validation
+                if (prop.Name.Contains("Email", StringComparison.OrdinalIgnoreCase))
+                {
+                    sb.AppendLine("            .EmailAddress()");
+                }
             }
-            else if (prop.MaxLength.HasValue)
+            // Numeric constraints
+            else if (IsNumericType(prop.Type) && prop.Constraints != null)
             {
-                sb.AppendLine($"        RuleFor(x => x.{prop.Name})");
-                sb.AppendLine($"            .MaximumLength({prop.MaxLength.Value})");
-                sb.AppendLine($"            .When(x => x.{prop.Name} != null);");
-                sb.AppendLine();
+                if (!string.IsNullOrEmpty(prop.Constraints.MinValue))
+                {
+                    sb.AppendLine($"            .GreaterThanOrEqualTo({prop.Constraints.MinValue})");
+                }
+                
+                if (!string.IsNullOrEmpty(prop.Constraints.MaxValue))
+                {
+                    sb.AppendLine($"            .LessThanOrEqualTo({prop.Constraints.MaxValue})");
+                }
+                
+                // Precision and scale for decimal
+                if (prop.Type == "decimal" && !string.IsNullOrEmpty(prop.Constraints.Precision) && !string.IsNullOrEmpty(prop.Constraints.Scale))
+                {
+                    sb.AppendLine($"            .PrecisionScale({prop.Constraints.Precision}, {prop.Constraints.Scale}, true)");
+                }
             }
+            
+            // When clause for nullable properties
+            if (!prop.IsRequired)
+            {
+                sb.AppendLine($"            .When(x => x.{prop.Name} != null)");
+            }
+            
+            sb.AppendLine($"            .WithMessage(\"{prop.Name} validation failed.\");");
+            sb.AppendLine();
         }
         
         sb.AppendLine("    }");
         sb.AppendLine("}");
         
         return sb.ToString();
+    }
+    
+    private static bool IsNumericType(string type)
+    {
+        return type switch
+        {
+            "int" or "long" or "short" or "byte" or "decimal" or "double" or "float" => true,
+            _ => false
+        };
     }
     
     public static string GenerateUpdateValidator(EntityModel entity)
@@ -68,26 +125,74 @@ public static class ValidatorTemplate
         
         foreach (var prop in entity.Properties.Where(p => !p.IsKey))
         {
+            var hasRules = prop.IsRequired || prop.MaxLength.HasValue || prop.Constraints != null;
+            if (!hasRules) continue;
+            
+            sb.AppendLine($"        RuleFor(x => x.{prop.Name})");
+            
+            // Required validation
             if (prop.IsRequired)
             {
-                sb.AppendLine($"        RuleFor(x => x.{prop.Name})");
                 sb.AppendLine("            .NotEmpty()");
+            }
+            
+            // String constraints
+            if (prop.Type == "string" && prop.Constraints != null)
+            {
+                if (!string.IsNullOrEmpty(prop.Constraints.MinLength))
+                {
+                    sb.AppendLine($"            .MinimumLength({prop.Constraints.MinLength})");
+                }
                 
-                if (prop.MaxLength.HasValue)
+                if (!string.IsNullOrEmpty(prop.Constraints.MaxLength))
+                {
+                    sb.AppendLine($"            .MaximumLength({prop.Constraints.MaxLength})");
+                }
+                else if (prop.MaxLength.HasValue)
                 {
                     sb.AppendLine($"            .MaximumLength({prop.MaxLength.Value})");
                 }
                 
-                sb.AppendLine($"            .WithMessage(\"{prop.Name} is required.\");");
-                sb.AppendLine();
+                if (!string.IsNullOrEmpty(prop.Constraints.RegexPattern))
+                {
+                    var escapedPattern = prop.Constraints.RegexPattern.Replace("\\", "\\\\").Replace("\"", "\\\"");
+                    sb.AppendLine($"            .Matches(@\"{escapedPattern}\")");
+                }
+                
+                // Email validation
+                if (prop.Name.Contains("Email", StringComparison.OrdinalIgnoreCase))
+                {
+                    sb.AppendLine("            .EmailAddress()");
+                }
             }
-            else if (prop.MaxLength.HasValue)
+            // Numeric constraints
+            else if (IsNumericType(prop.Type) && prop.Constraints != null)
             {
-                sb.AppendLine($"        RuleFor(x => x.{prop.Name})");
-                sb.AppendLine($"            .MaximumLength({prop.MaxLength.Value})");
-                sb.AppendLine($"            .When(x => x.{prop.Name} != null);");
-                sb.AppendLine();
+                if (!string.IsNullOrEmpty(prop.Constraints.MinValue))
+                {
+                    sb.AppendLine($"            .GreaterThanOrEqualTo({prop.Constraints.MinValue})");
+                }
+                
+                if (!string.IsNullOrEmpty(prop.Constraints.MaxValue))
+                {
+                    sb.AppendLine($"            .LessThanOrEqualTo({prop.Constraints.MaxValue})");
+                }
+                
+                // Precision and scale for decimal
+                if (prop.Type == "decimal" && !string.IsNullOrEmpty(prop.Constraints.Precision) && !string.IsNullOrEmpty(prop.Constraints.Scale))
+                {
+                    sb.AppendLine($"            .PrecisionScale({prop.Constraints.Precision}, {prop.Constraints.Scale}, true)");
+                }
             }
+            
+            // When clause for nullable properties
+            if (!prop.IsRequired)
+            {
+                sb.AppendLine($"            .When(x => x.{prop.Name} != null)");
+            }
+            
+            sb.AppendLine($"            .WithMessage(\"{prop.Name} validation failed.\");");
+            sb.AppendLine();
         }
         
         sb.AppendLine("    }");
