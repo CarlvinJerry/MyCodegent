@@ -561,10 +561,6 @@ public class CodeGenController : ControllerBase
         var dbContextCode = MyCodeGent.Templates.InfrastructureTemplate.GenerateDbContext(entities, config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(dbContextPath, "ApplicationDbContext.cs"), dbContextCode);
 
-        var modelsPath = Path.Combine(config.OutputPath, "Application", "Common", "Models");
-        var pagedResultCode = MyCodeGent.Templates.InfrastructureTemplate.GeneratePagedResult(config.RootNamespace);
-        await _fileWriter.WriteFileAsync(Path.Combine(modelsPath, "PagedResult.cs"), pagedResultCode);
-        
         // Generate Master AutoMapper Profile
         if (config.UseAutoMapper)
         {
@@ -614,6 +610,7 @@ public class CodeGenController : ControllerBase
         _logger.LogInformation("Generated Swagger Configuration");
         
         // Generate Pagination Models
+        var modelsPath = Path.Combine(config.OutputPath, "Application", "Common", "Models");
         var pagedResultCode = MyCodeGent.Templates.PaginationTemplate.GeneratePagedResult(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(modelsPath, "PagedResult.cs"), pagedResultCode);
         
