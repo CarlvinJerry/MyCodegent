@@ -626,6 +626,35 @@ public class CodeGenController : ControllerBase
         var testProject = MyCodeGent.Templates.TestTemplate.GenerateTestProject(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(testProjectPath, $"{config.RootNamespace}.Application.Tests.csproj"), testProject);
         _logger.LogInformation("Generated Test Project");
+        
+        // Generate File Upload Service
+        var fileStorageInterface = MyCodeGent.Templates.FileUploadTemplate.GenerateFileStorageService(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(interfacePath, "IFileStorageService.cs"), fileStorageInterface);
+        
+        var fileStorageService = MyCodeGent.Templates.FileUploadTemplate.GenerateLocalFileStorageService(config.RootNamespace);
+        var servicesPath = Path.Combine(config.OutputPath, "Infrastructure", "Services");
+        await _fileWriter.WriteFileAsync(Path.Combine(servicesPath, "LocalFileStorageService.cs"), fileStorageService);
+        
+        var filesController = MyCodeGent.Templates.FileUploadTemplate.GenerateFileUploadController(config.RootNamespace);
+        var controllersPath = Path.Combine(config.OutputPath, "Api", "Controllers");
+        await _fileWriter.WriteFileAsync(Path.Combine(controllersPath, "FilesController.cs"), filesController);
+        _logger.LogInformation("Generated File Upload Service");
+        
+        // Generate Audit Logging
+        var auditEntity = MyCodeGent.Templates.AuditTemplate.GenerateAuditLogEntity(config.RootNamespace);
+        var domainPath = Path.Combine(config.OutputPath, "Domain", "Entities");
+        await _fileWriter.WriteFileAsync(Path.Combine(domainPath, "AuditLog.cs"), auditEntity);
+        
+        var auditConfig = MyCodeGent.Templates.AuditTemplate.GenerateAuditLogConfiguration(config.RootNamespace);
+        var configurationsPath = Path.Combine(config.OutputPath, "Infrastructure", "Persistence", "Configurations");
+        await _fileWriter.WriteFileAsync(Path.Combine(configurationsPath, "AuditLogConfiguration.cs"), auditConfig);
+        
+        var auditService = MyCodeGent.Templates.AuditTemplate.GenerateAuditService(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(servicesPath, "AuditService.cs"), auditService);
+        
+        var auditController = MyCodeGent.Templates.AuditTemplate.GenerateAuditController(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(controllersPath, "AuditController.cs"), auditController);
+        _logger.LogInformation("Generated Audit Logging System");
     }
 
     private async Task<List<GeneratedFile>> CollectGeneratedFilesAsync(string rootPath)
