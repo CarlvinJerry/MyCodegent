@@ -209,6 +209,94 @@ public class CodeGenController : ControllerBase
         }
     }
 
+    [HttpPost("generate-incremental")]
+    public async Task<IActionResult> GenerateIncremental([FromBody] IncrementalGenerateRequest request)
+    {
+        try
+        {
+            // Validate request
+            if (request == null)
+            {
+                return BadRequest(new { error = "Request body is required" });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.ProjectPath))
+            {
+                return BadRequest(new { error = "ProjectPath is required for incremental generation" });
+            }
+
+            if (!Directory.Exists(request.ProjectPath))
+            {
+                return BadRequest(new { error = $"Project path not found: {request.ProjectPath}" });
+            }
+
+            if (request.NewEntities == null || request.NewEntities.Count == 0)
+            {
+                return BadRequest(new { error = "No new entities provided" });
+            }
+
+            // Validate entities
+            foreach (var entity in request.NewEntities)
+            {
+                if (string.IsNullOrWhiteSpace(entity.Name))
+                {
+                    return BadRequest(new { error = "Entity name is required" });
+                }
+                if (entity.Properties == null || entity.Properties.Count == 0)
+                {
+                    return BadRequest(new { error = $"Entity '{entity.Name}' must have at least one property" });
+                }
+            }
+
+            var webConfig = request.Config ?? new GenerationConfig();
+            
+            _logger.LogInformation("Starting incremental generation for {Count} entities. ProjectPath: {ProjectPath}", 
+                request.NewEntities.Count, request.ProjectPath);
+
+            // Convert to template models
+            var templateConfig = ConvertToTemplateConfig(webConfig);
+            templateConfig.OutputPath = request.ProjectPath; // Use existing project path
+            
+            var templateEntities = request.NewEntities.Select(e =>
+            {
+                var te = ConvertToTemplateModel(e);
+                te.Namespace = templateConfig.RootNamespace;
+                return te;
+            }).ToList();
+
+            // Use incremental generator
+            var incrementalGenerator = new MyCodeGent.Core.Services.IncrementalCodeGenerator(_fileWriter);
+            var result = await incrementalGenerator.GenerateIncrementalAsync(
+                templateEntities, 
+                templateConfig, 
+                request.ProjectPath);
+
+            _logger.LogInformation("Incremental generation completed. New files: {NewFiles}, Updated files: {UpdatedFiles}", 
+                result.NewFiles.Count, result.UpdatedFiles.Count);
+
+            return Ok(new
+            {
+                success = true,
+                entitiesAdded = result.EntitiesAdded,
+                newFilesCount = result.NewFiles.Count,
+                updatedFilesCount = result.UpdatedFiles.Count,
+                newFiles = result.NewFiles.Select(f => Path.GetRelativePath(request.ProjectPath, f)).ToList(),
+                updatedFiles = result.UpdatedFiles.Select(f => Path.GetRelativePath(request.ProjectPath, f)).ToList(),
+                message = $"Successfully added {result.EntitiesAdded.Count} new entities to existing project"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during incremental generation");
+            return StatusCode(500, new 
+            { 
+                error = "Incremental generation failed",
+                message = ex.Message,
+                type = ex.GetType().Name
+            });
+        }
+    }
+
     [HttpGet("health")]
     public IActionResult Health()
     {
@@ -354,6 +442,13 @@ public class PreviewRequest
 {
     public GenerationConfig? Config { get; set; }
     public EntityModel? Entity { get; set; }
+}
+
+public class IncrementalGenerateRequest
+{
+    public string ProjectPath { get; set; } = string.Empty;
+    public GenerationConfig? Config { get; set; }
+    public List<EntityModel> NewEntities { get; set; } = new();
 }
 
 public class GeneratedFile

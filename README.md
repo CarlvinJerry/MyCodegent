@@ -13,6 +13,7 @@
 - ✅ **Soft Delete Support** - Optional soft delete functionality
 - ✅ **Audit Fields** - Automatic CreatedAt, UpdatedAt tracking
 - ✅ **DTOs** - Data Transfer Objects for clean API responses
+- ✅ **Incremental Generation** - Add new entities to existing projects without overwriting
 - ✅ **Configurable** - JSON-based configuration for easy customization
 
 ## 📁 Project Structure
