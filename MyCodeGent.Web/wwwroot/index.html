@@ -1726,96 +1726,56 @@
 
                     <!-- What It Generates -->
                     <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <h3 style="color: var(--primary-color); margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                        <h3 style="color: var(--primary-color); margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 1.5rem;">📦</span> What This Tool Generates
                         </h3>
-                        <div style="display: grid; gap: 15px;">
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Complete 4-Layer Architecture</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Domain, Application, Infrastructure, and API layers with proper separation of concerns</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ CQRS Pattern Implementation</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Commands (Create, Update, Delete) and Queries (GetById, GetAll) with MediatR handlers</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Entity Framework Core Setup</strong>
-                                <span style="color: #666; font-size: 0.95rem;">DbContext, entity configurations, relationships, indexes, and business keys</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ RESTful API Controllers</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Full CRUD endpoints with Swagger documentation and XML comments</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ FluentValidation Rules</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Automatic validation based on your property constraints (min/max length, regex, ranges)</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ AutoMapper Profiles</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Bidirectional mappings between entities, DTOs, and commands</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Production Infrastructure</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Health checks, CORS, exception handling, Serilog logging, and appsettings.json</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Seed Data</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Realistic test data with proper relationship references for immediate testing</span>
-                            </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                                <strong style="color: #667eea; display: block; margin-bottom: 5px;">✓ Git Repository</strong>
-                                <span style="color: #666; font-size: 0.95rem;">Automatically initialized with .gitignore and initial commit</span>
-                            </div>
+                        <div style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                            <ul style="margin: 0; padding-left: 20px; color: #333; line-height: 1.8;">
+                                <li><strong style="color: #667eea;">Complete 4-Layer Architecture</strong> - Domain, Application, Infrastructure, and API layers with proper separation of concerns</li>
+                                <li><strong style="color: #667eea;">CQRS Pattern Implementation</strong> - Commands (Create, Update, Delete) and Queries (GetById, GetAll) with MediatR handlers</li>
+                                <li><strong style="color: #667eea;">Entity Framework Core Setup</strong> - DbContext, entity configurations, relationships, indexes, and business keys</li>
+                                <li><strong style="color: #667eea;">RESTful API Controllers</strong> - Full CRUD endpoints with Swagger documentation and XML comments</li>
+                                <li><strong style="color: #667eea;">FluentValidation Rules</strong> - Automatic validation based on your property constraints (min/max length, regex, ranges)</li>
+                                <li><strong style="color: #667eea;">AutoMapper Profiles</strong> - Bidirectional mappings between entities, DTOs, and commands</li>
+                                <li><strong style="color: #667eea;">Production Infrastructure</strong> - Health checks, CORS, exception handling, Serilog logging, and appsettings.json</li>
+                                <li><strong style="color: #667eea;">Seed Data</strong> - Realistic test data with proper relationship references for immediate testing</li>
+                                <li><strong style="color: #667eea;">Git Repository</strong> - Automatically initialized with .gitignore and initial commit</li>
+                                <li><strong style="color: #667eea;">Performance Optimizations</strong> - AsNoTracking queries, response caching, optimized SaveChanges, and async best practices</li>
+                            </ul>
                         </div>
                     </div>
 
                     <!-- What You Need to Add -->
                     <div style="background: #fff3cd; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 2px solid #ffc107;">
-                        <h3 style="color: #856404; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                        <h3 style="color: #856404; margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 1.5rem;">⚠️</span> What You Need to Add/Customize
                         </h3>
-                        <div style="display: grid; gap: 12px;">
-                            <div style="padding: 12px; background: white; border-radius: 6px;">
-                                <strong style="color: #856404;">→ Business Logic</strong>
-                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Add your custom business rules and domain logic to handlers and entities</p>
-                            </div>
-                            <div style="padding: 12px; background: white; border-radius: 6px;">
-                                <strong style="color: #856404;">→ Authentication & Authorization</strong>
-                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Configure JWT/Identity and add [Authorize] attributes to controllers</p>
-                            </div>
-                            <div style="padding: 12px; background: white; border-radius: 6px;">
-                                <strong style="color: #856404;">→ Database Connection String</strong>
-                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Update appsettings.json with your actual database connection</p>
-                            </div>
-                            <div style="padding: 12px; background: white; border-radius: 6px;">
-                                <strong style="color: #856404;">→ Custom Queries</strong>
-                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Add specialized queries beyond basic GetById/GetAll (e.g., search, filtering)</p>
-                            </div>
-                            <div style="padding: 12px; background: white; border-radius: 6px;">
-                                <strong style="color: #856404;">→ Unit & Integration Tests</strong>
-                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Create test projects to ensure code quality (not auto-generated yet)</p>
-                            </div>
-                            <div style="padding: 12px; background: white; border-radius: 6px;">
-                                <strong style="color: #856404;">→ Frontend Application</strong>
-                                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.95rem;">Build your UI (React, Angular, Vue, Blazor) to consume the API</p>
-                            </div>
+                        <div style="max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                            <ul style="margin: 0; padding-left: 20px; color: #856404; line-height: 1.8;">
+                                <li><strong>Business Logic</strong> - Add your custom business rules and domain logic to handlers and entities</li>
+                                <li><strong>Authentication & Authorization</strong> - Configure JWT/Identity and add [Authorize] attributes to controllers</li>
+                                <li><strong>Database Connection String</strong> - Update appsettings.json with your actual database connection</li>
+                                <li><strong>Custom Queries</strong> - Add specialized queries beyond basic GetById/GetAll (e.g., search, filtering, pagination)</li>
+                                <li><strong>Unit & Integration Tests</strong> - Create test projects to ensure code quality (not auto-generated yet)</li>
+                                <li><strong>Frontend Application</strong> - Build your UI (React, Angular, Vue, Blazor) to consume the API</li>
+                            </ul>
                         </div>
                     </div>
 
                     <!-- Getting Started -->
                     <div style="background: #d1ecf1; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 2px solid #17a2b8;">
-                        <h3 style="color: #0c5460; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                        <h3 style="color: #0c5460; margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 1.5rem;">🎯</span> Getting Started with Generated Code
                         </h3>
-                        <div style="background: white; padding: 20px; border-radius: 8px;">
-                            <ol style="margin: 0; padding-left: 20px; color: #0c5460;">
-                                <li style="margin-bottom: 12px;"><strong>Download & Extract</strong> - Get your generated code ZIP file</li>
-                                <li style="margin-bottom: 12px;"><strong>Open in IDE</strong> - Use Visual Studio 2022 or VS Code with C# extension</li>
-                                <li style="margin-bottom: 12px;"><strong>Restore Packages</strong> - Run <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet restore</code></li>
-                                <li style="margin-bottom: 12px;"><strong>Update Connection String</strong> - Edit appsettings.json with your database</li>
-                                <li style="margin-bottom: 12px;"><strong>Create Database</strong> - Run <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet ef database update</code></li>
-                                <li style="margin-bottom: 12px;"><strong>Run Application</strong> - Execute <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet run</code></li>
-                                <li style="margin-bottom: 0;"><strong>Explore API</strong> - Visit <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">/swagger</code> to test endpoints</li>
+                        <div style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
+                            <ol style="margin: 0; padding-left: 20px; color: #0c5460; line-height: 1.8;">
+                                <li><strong>Download & Extract</strong> - Get your generated code ZIP file</li>
+                                <li><strong>Open in IDE</strong> - Use Visual Studio 2022 or VS Code with C# extension</li>
+                                <li><strong>Restore Packages</strong> - Run <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet restore</code></li>
+                                <li><strong>Update Connection String</strong> - Edit appsettings.json with your database</li>
+                                <li><strong>Create Database</strong> - Run <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet ef database update</code></li>
+                                <li><strong>Run Application</strong> - Execute <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">dotnet run</code></li>
+                                <li><strong>Explore API</strong> - Visit <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">/swagger</code> to test endpoints</li>
                             </ol>
                         </div>
                     </div>
