@@ -572,8 +572,29 @@ public class CodeGenController : ControllerBase
                 IsKey = p.IsKey,
                 IsNullable = p.IsNullable,
                 MaxLength = p.MaxLength,
-                DefaultValue = p.DefaultValue
-            }).ToList()
+                DefaultValue = p.DefaultValue,
+                Constraints = p.Constraints != null ? new TemplateModels.PropertyConstraints
+                {
+                    MinLength = p.Constraints.MinLength,
+                    MaxLength = p.Constraints.MaxLength,
+                    MinValue = p.Constraints.MinValue,
+                    MaxValue = p.Constraints.MaxValue,
+                    RegexPattern = p.Constraints.RegexPattern,
+                    IsUnique = p.Constraints.IsUnique,
+                    IsIndexed = p.Constraints.IsIndexed,
+                    Precision = p.Constraints.Precision,
+                    Scale = p.Constraints.Scale
+                } : null
+            }).ToList(),
+            Relationships = webModel.Relationships?.Select(r => new TemplateModels.RelationshipModel
+            {
+                RelatedEntity = r.RelatedEntity,
+                Type = r.Type,
+                ForeignKeyProperty = r.ForeignKeyProperty,
+                NavigationProperty = r.NavigationProperty,
+                InverseNavigationProperty = r.InverseNavigationProperty
+            }).ToList() ?? new List<TemplateModels.RelationshipModel>(),
+            BusinessKeys = webModel.BusinessKeys ?? new List<string>()
         };
     }
     

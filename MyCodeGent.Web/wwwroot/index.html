@@ -1612,9 +1612,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label>New Entities to Add</label>
+                    <label>Entities</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="addEntityIncremental()">+ Add Entity</button>
+                        <button class="btn btn-secondary" onclick="showTemplates()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                            📋 Templates
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportProject()" title="Export project configuration">
+                            💾 Export
+                        </button>
+                        <button class="btn btn-secondary" onclick="importProject()" title="Import project configuration">
+                            📂 Import
+                        </button>
+                        <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+                        <input type="text" id="searchEntities" placeholder="🔍 Search entities..." style="flex: 1; min-width: 200px; padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 6px;" oninput="filterEntities(this.value)">
+                    </div>
                     <div id="entityListIncremental"></div>
-                    <button class="btn btn-secondary" onclick="addEntityIncremental()">+ Add Entity</button>
                 </div>
 
                 <button class="btn btn-primary" onclick="generateIncremental()">🔄 Add Entities to Project</button>
@@ -1893,6 +1906,9 @@
                             <button class="btn btn-secondary" onclick="showBusinessKeys(${entity.id})" 
                                     style="padding: 8px 16px; font-size: 0.9rem;">
                                 🔑 Business Keys
+                            </button>
+                            <button class="btn btn-secondary" onclick="duplicateEntity(${entity.id})" title="Duplicate this entity">
+                                📋 Duplicate
                             </button>
                             <button class="btn btn-secondary" onclick="removeEntity(${entity.id})">Remove</button>
                         </div>
@@ -2809,17 +2825,17 @@
                 entity.relationships = [];
             }
 
-            // Create relationship object
+            // Create relationship object (PascalCase for backend)
             const relationship = {
-                type: selectedRelationshipType,
-                relatedEntity: relatedEntity.name,
-                relatedEntityId: relatedEntity.id,
-                foreignKeyProperty: document.getElementById('foreignKeyProperty').value,
-                principalKey: document.getElementById('principalKey').value,
-                navigationProperty: document.getElementById('navigationProperty').value,
-                inverseNavigationProperty: document.getElementById('inverseNavigationProperty').value,
-                onDeleteBehavior: document.getElementById('onDeleteBehavior').value,
-                joinTableName: document.getElementById('joinTableName').value
+                Type: selectedRelationshipType,
+                RelatedEntity: relatedEntity.name,
+                RelatedEntityId: relatedEntity.id,
+                ForeignKeyProperty: document.getElementById('foreignKeyProperty').value,
+                PrincipalKey: document.getElementById('principalKey').value,
+                NavigationProperty: document.getElementById('navigationProperty').value,
+                InverseNavigationProperty: document.getElementById('inverseNavigationProperty').value,
+                OnDeleteBehavior: document.getElementById('onDeleteBehavior').value,
+                JoinTableName: document.getElementById('joinTableName').value
             };
 
             // Add relationship
@@ -3147,13 +3163,13 @@
 
                 entity.relationships.forEach(rel => {
                     const sourceDiv = canvas.querySelector(`[data-entity-id="${entity.id}"]`);
-                    const targetEntity = entities.find(e => e.id === rel.relatedEntityId);
+                    const targetEntity = entities.find(e => e.id === rel.RelatedEntityId);
                     if (!targetEntity) return;
 
                     const targetDiv = canvas.querySelector(`[data-entity-id="${targetEntity.id}"]`);
                     if (!sourceDiv || !targetDiv) return;
 
-                    drawLine(sourceDiv, targetDiv, rel.type, canvas);
+                    drawLine(sourceDiv, targetDiv, rel.Type, canvas);
                 });
             });
         }
@@ -3557,6 +3573,298 @@
                 alert('❌ Failed to check for updates. Please try again later.');
             }
         }
+
+        // Entity Templates
+        const entityTemplates = {
+            user: {
+                name: 'User',
+                hasAuditFields: true,
+                hasSoftDelete: true,
+                properties: [
+                    { name: 'Id', type: 'int', isKey: true, isRequired: true },
+                    { name: 'Email', type: 'string', isRequired: true, maxLength: 100, constraints: { isUnique: true, isIndexed: true, regexPattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$' } },
+                    { name: 'Username', type: 'string', isRequired: true, maxLength: 50, constraints: { isUnique: true, minLength: '3', maxLength: '50' } },
+                    { name: 'FirstName', type: 'string', isRequired: true, maxLength: 50 },
+                    { name: 'LastName', type: 'string', isRequired: true, maxLength: 50 },
+                    { name: 'PasswordHash', type: 'string', isRequired: true },
+                    { name: 'IsActive', type: 'bool', isRequired: true },
+                    { name: 'LastLoginAt', type: 'DateTime', isRequired: false }
+                ],
+                relationships: [],
+                businessKeys: ['Email']
+            },
+            product: {
+                name: 'Product',
+                hasAuditFields: true,
+                hasSoftDelete: true,
+                properties: [
+                    { name: 'Id', type: 'int', isKey: true, isRequired: true },
+                    { name: 'SKU', type: 'string', isRequired: true, maxLength: 50, constraints: { isUnique: true, isIndexed: true } },
+                    { name: 'Name', type: 'string', isRequired: true, maxLength: 200 },
+                    { name: 'Description', type: 'string', isRequired: false },
+                    { name: 'Price', type: 'decimal', isRequired: true, constraints: { precision: '18', scale: '2', minValue: '0' } },
+                    { name: 'StockQuantity', type: 'int', isRequired: true, constraints: { minValue: '0' } },
+                    { name: 'IsAvailable', type: 'bool', isRequired: true }
+                ],
+                relationships: [],
+                businessKeys: ['SKU']
+            },
+            order: {
+                name: 'Order',
+                hasAuditFields: true,
+                hasSoftDelete: true,
+                properties: [
+                    { name: 'Id', type: 'int', isKey: true, isRequired: true },
+                    { name: 'OrderNumber', type: 'string', isRequired: true, maxLength: 50, constraints: { isUnique: true, isIndexed: true } },
+                    { name: 'OrderDate', type: 'DateTime', isRequired: true },
+                    { name: 'TotalAmount', type: 'decimal', isRequired: true, constraints: { precision: '18', scale: '2' } },
+                    { name: 'Status', type: 'string', isRequired: true, maxLength: 50 },
+                    { name: 'ShippingAddress', type: 'string', isRequired: true },
+                    { name: 'Notes', type: 'string', isRequired: false }
+                ],
+                relationships: [],
+                businessKeys: ['OrderNumber']
+            },
+            blogPost: {
+                name: 'BlogPost',
+                hasAuditFields: true,
+                hasSoftDelete: true,
+                properties: [
+                    { name: 'Id', type: 'int', isKey: true, isRequired: true },
+                    { name: 'Title', type: 'string', isRequired: true, maxLength: 200 },
+                    { name: 'Slug', type: 'string', isRequired: true, maxLength: 250, constraints: { isUnique: true, isIndexed: true } },
+                    { name: 'Content', type: 'string', isRequired: true },
+                    { name: 'Excerpt', type: 'string', isRequired: false, maxLength: 500 },
+                    { name: 'PublishedAt', type: 'DateTime', isRequired: false },
+                    { name: 'IsPublished', type: 'bool', isRequired: true },
+                    { name: 'ViewCount', type: 'int', isRequired: true, constraints: { minValue: '0' } }
+                ],
+                relationships: [],
+                businessKeys: ['Slug']
+            }
+        };
+
+        function showTemplates() {
+            const templateHtml = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="if(event.target === this) this.remove()">
+                    <div style="background: white; padding: 30px; border-radius: 16px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                        <h2 style="margin: 0 0 20px 0; color: var(--primary-color);">📋 Entity Templates</h2>
+                        <p style="color: #666; margin-bottom: 25px;">Quick-start with pre-built entity templates</p>
+                        
+                        <div style="display: grid; gap: 15px;">
+                            <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.background='#f8f9fa'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='white'" onclick="importTemplate('user'); this.closest('[style*=fixed]').remove();">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">👤</div>
+                                <h3 style="margin: 0 0 8px 0;">User</h3>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Authentication-ready user entity with email, username, and password</p>
+                                <div style="margin-top: 10px; font-size: 0.85rem; color: #999;">8 properties • Email business key</div>
+                            </div>
+                            
+                            <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.background='#f8f9fa'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='white'" onclick="importTemplate('product'); this.closest('[style*=fixed]').remove();">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">📦</div>
+                                <h3 style="margin: 0 0 8px 0;">Product</h3>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">E-commerce product with SKU, price, and inventory</p>
+                                <div style="margin-top: 10px; font-size: 0.85rem; color: #999;">7 properties • SKU business key</div>
+                            </div>
+                            
+                            <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.background='#f8f9fa'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='white'" onclick="importTemplate('order'); this.closest('[style*=fixed]').remove();">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">🛒</div>
+                                <h3 style="margin: 0 0 8px 0;">Order</h3>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Order management with order number, total, and status</p>
+                                <div style="margin-top: 10px; font-size: 0.85rem; color: #999;">7 properties • OrderNumber business key</div>
+                            </div>
+                            
+                            <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.background='#f8f9fa'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='white'" onclick="importTemplate('blogPost'); this.closest('[style*=fixed]').remove();">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">📝</div>
+                                <h3 style="margin: 0 0 8px 0;">Blog Post</h3>
+                                <p style="margin: 0; color: #666; font-size: 0.9rem;">Blog post with title, slug, content, and publishing</p>
+                                <div style="margin-top: 10px; font-size: 0.85rem; color: #999;">8 properties • Slug business key</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-secondary" onclick="this.closest('[style*=fixed]').remove()" style="margin-top: 20px; width: 100%;">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', templateHtml);
+        }
+
+        function importTemplate(templateName) {
+            const template = entityTemplates[templateName];
+            if (!template) return;
+            
+            const newEntity = {
+                id: ++currentEntityId,
+                ...JSON.parse(JSON.stringify(template)) // Deep clone
+            };
+            
+            entities.push(newEntity);
+            renderEntities();
+            saveState(); // For undo/redo
+            alert(`✅ ${template.name} template imported successfully!`);
+        }
+
+        // Export/Import Project
+        function exportProject() {
+            const projectData = {
+                version: '2.0.0',
+                exportDate: new Date().toISOString(),
+                config: {
+                    rootNamespace: document.getElementById('namespace').value,
+                    databaseProvider: document.getElementById('databaseProvider').value,
+                    connectionString: document.getElementById('connectionString').value,
+                    generateAuth: document.getElementById('generateAuth').checked,
+                    authType: document.getElementById('authType').value,
+                    loggingProvider: document.getElementById('loggingProvider').value
+                },
+                entities: entities
+            };
+            
+            const dataStr = JSON.stringify(projectData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `mycodegent-project-${Date.now()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Project exported successfully!');
+        }
+
+        function importProject() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const projectData = JSON.parse(e.target.result);
+                    
+                    // Import config
+                    if (projectData.config) {
+                        document.getElementById('namespace').value = projectData.config.rootNamespace || 'MyApp';
+                        document.getElementById('databaseProvider').value = projectData.config.databaseProvider || 'SqlServer';
+                        document.getElementById('connectionString').value = projectData.config.connectionString || '';
+                        document.getElementById('generateAuth').checked = projectData.config.generateAuth || false;
+                        document.getElementById('authType').value = projectData.config.authType || 'JWT';
+                        document.getElementById('loggingProvider').value = projectData.config.loggingProvider || 'Serilog';
+                    }
+                    
+                    // Import entities
+                    if (projectData.entities && Array.isArray(projectData.entities)) {
+                        entities = projectData.entities;
+                        currentEntityId = Math.max(...entities.map(e => e.id), 0);
+                        renderEntities();
+                        saveState(); // For undo/redo
+                        alert(`✅ Project imported successfully! ${entities.length} entities loaded.`);
+                    }
+                } catch (error) {
+                    alert('❌ Failed to import project: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+
+        // Duplicate Entity
+        function duplicateEntity(entityId) {
+            const entity = entities.find(e => e.id === entityId);
+            if (!entity) return;
+            
+            const newEntity = {
+                ...JSON.parse(JSON.stringify(entity)), // Deep clone
+                id: ++currentEntityId,
+                name: entity.name + 'Copy'
+            };
+            
+            entities.push(newEntity);
+            renderEntities();
+            saveState(); // For undo/redo
+            alert(`✅ Entity "${entity.name}" duplicated as "${newEntity.name}"`);
+        }
+
+        // Search/Filter Entities
+        function filterEntities(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            const entityCards = document.querySelectorAll('.entity-card');
+            
+            entityCards.forEach(card => {
+                const entityName = card.querySelector('input[type="text"]').value.toLowerCase();
+                if (entityName.includes(term)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Undo/Redo Functionality
+        let history = [];
+        let historyIndex = -1;
+        const MAX_HISTORY = 50;
+
+        function saveState() {
+            // Remove any states after current index
+            history = history.slice(0, historyIndex + 1);
+            
+            // Add current state
+            history.push(JSON.parse(JSON.stringify(entities)));
+            
+            // Limit history size
+            if (history.length > MAX_HISTORY) {
+                history.shift();
+            } else {
+                historyIndex++;
+            }
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                entities = JSON.parse(JSON.stringify(history[historyIndex]));
+                renderEntities();
+                alert('↩️ Undo successful');
+            } else {
+                alert('⚠️ Nothing to undo');
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                entities = JSON.parse(JSON.stringify(history[historyIndex]));
+                renderEntities();
+                alert('↪️ Redo successful');
+            } else {
+                alert('⚠️ Nothing to redo');
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Z for undo
+            if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            }
+            // Ctrl+Shift+Z or Ctrl+Y for redo
+            if ((e.ctrlKey && e.shiftKey && e.key === 'Z') || (e.ctrlKey && e.key === 'y')) {
+                e.preventDefault();
+                redo();
+            }
+            // Ctrl+S to prevent default save
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                alert('💾 Auto-save is always active!');
+            }
+        });
+
+        // Initialize history with empty state
+        saveState();
         
         // Initialize with one entity
         addEntity();
