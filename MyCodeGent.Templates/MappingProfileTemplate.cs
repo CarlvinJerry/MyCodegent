@@ -12,6 +12,8 @@ public static class MappingProfileTemplate
         sb.AppendLine("using AutoMapper;");
         sb.AppendLine($"using {entity.Namespace}.Domain.Entities;");
         sb.AppendLine($"using {entity.Namespace}.Application.{entity.Name}s;");
+        sb.AppendLine($"using {entity.Namespace}.Application.{entity.Name}s.Commands.Create{entity.Name};");
+        sb.AppendLine($"using {entity.Namespace}.Application.{entity.Name}s.Commands.Update{entity.Name};");
         sb.AppendLine();
         sb.AppendLine($"namespace {entity.Namespace}.Application.Mappings;");
         sb.AppendLine();
@@ -60,17 +62,21 @@ public static class MappingProfileTemplate
         sb.AppendLine($"namespace {rootNamespace}.Application.Mappings;");
         sb.AppendLine();
         sb.AppendLine("/// <summary>");
-        sb.AppendLine("/// Master AutoMapper profile that includes all entity mappings");
+        sb.AppendLine("/// Master AutoMapper profile - AutoMapper will automatically discover all Profile classes");
+        sb.AppendLine("/// This class is optional but can be used for global configuration");
         sb.AppendLine("/// </summary>");
         sb.AppendLine("public class MappingProfile : Profile");
         sb.AppendLine("{");
         sb.AppendLine("    public MappingProfile()");
         sb.AppendLine("    {");
+        sb.AppendLine("        // AutoMapper will automatically discover and load all Profile classes");
+        sb.AppendLine("        // in the assembly, so individual profiles don't need to be explicitly included.");
+        sb.AppendLine("        // ");
+        sb.AppendLine("        // Individual entity mapping profiles:");
         
         foreach (var entity in entities)
         {
-            sb.AppendLine($"        // {entity.Name} mappings");
-            sb.AppendLine($"        this.IncludeProfile<{entity.Name}MappingProfile>();");
+            sb.AppendLine($"        // - {entity.Name}MappingProfile");
         }
         
         sb.AppendLine("    }");

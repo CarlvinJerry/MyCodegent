@@ -79,7 +79,7 @@ public static class PaginationTemplate
         sb.AppendLine();
         sb.AppendLine($"namespace {entity.Namespace}.Application.{entity.Name}s.Queries.GetAll{entity.Name}sPaged;");
         sb.AppendLine();
-        sb.AppendLine($"public class GetAll{entity.Name}sPagedQueryHandler : IRequest Handler<GetAll{entity.Name}sPagedQuery, PagedResult<{entity.Name}Dto>>");
+        sb.AppendLine($"public class GetAll{entity.Name}sPagedQueryHandler : IRequestHandler<GetAll{entity.Name}sPagedQuery, PagedResult<{entity.Name}Dto>>");
         sb.AppendLine("{");
         sb.AppendLine("    private readonly IApplicationDbContext _context;");
         sb.AppendLine();
@@ -168,7 +168,7 @@ public static class PaginationTemplate
         sb.AppendLine($"        return new PagedResult<{entity.Name}Dto>");
         sb.AppendLine("        {");
         sb.AppendLine("            Items = items,");
-        sb.AppendLine("            Page = request.Page,");
+        sb.AppendLine("            PageNumber = request.Page,");
         sb.AppendLine("            PageSize = request.PageSize,");
         sb.AppendLine("            TotalCount = totalCount");
         sb.AppendLine("        };");

@@ -208,7 +208,13 @@ public class CodeGenController : ControllerBase
             // Cleanup
             System.IO.File.Delete(zipPath);
 
-            return File(bytes, "application/zip", $"{projectName}.zip");
+            // Sanitize filename for download (remove invalid characters)
+            var safeFileName = string.Join("_", projectName.Split(Path.GetInvalidFileNameChars()));
+            
+            // Set proper Content-Disposition header for download managers
+            Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{safeFileName}.zip\"");
+            
+            return File(bytes, "application/zip", $"{safeFileName}.zip");
         }
         catch (Exception ex)
         {
@@ -569,43 +575,43 @@ public class CodeGenController : ControllerBase
 
     private async Task GenerateCommonFilesAsync(List<TemplateModels.EntityModel> entities, TemplateModels.GenerationConfig config)
     {
-        var interfacePath = Path.Combine(config.OutputPath, "Application", "Common", "Interfaces");
+        var interfacePath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", "Common", "Interfaces");
         var interfaceCode = MyCodeGent.Templates.InfrastructureTemplate.GenerateApplicationDbContextInterface(entities, config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(interfacePath, "IApplicationDbContext.cs"), interfaceCode);
 
-        var dbContextPath = Path.Combine(config.OutputPath, "Infrastructure", "Persistence");
+        var dbContextPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", "Persistence");
         var dbContextCode = MyCodeGent.Templates.InfrastructureTemplate.GenerateDbContext(entities, config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(dbContextPath, "ApplicationDbContext.cs"), dbContextCode);
 
         // Generate Master AutoMapper Profile
         if (config.UseAutoMapper)
         {
-            var mappingPath = Path.Combine(config.OutputPath, "Application", "Mappings");
+            var mappingPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", "Mappings");
             var masterProfile = MyCodeGent.Templates.MappingProfileTemplate.GenerateMasterProfile(entities, config.RootNamespace);
             await _fileWriter.WriteFileAsync(Path.Combine(mappingPath, "MappingProfile.cs"), masterProfile);
             _logger.LogInformation("Generated Master AutoMapper Profile");
         }
         
         // Generate Seed Data
-        var seedDataPath = Path.Combine(config.OutputPath, "Infrastructure", "Persistence");
+        var seedDataPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", "Persistence");
         var seedData = MyCodeGent.Templates.SeedDataTemplate.Generate(entities, config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(seedDataPath, "ApplicationDbContextSeed.cs"), seedData);
         _logger.LogInformation("Generated Seed Data");
         
         // Generate Health Checks
-        var healthChecksPath = Path.Combine(config.OutputPath, "Infrastructure", "HealthChecks");
+        var healthChecksPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", "HealthChecks");
         var healthCheck = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateHealthChecks(config.RootNamespace, config.DatabaseProvider);
         await _fileWriter.WriteFileAsync(Path.Combine(healthChecksPath, "DatabaseHealthCheck.cs"), healthCheck);
         _logger.LogInformation("Generated Health Checks");
         
         // Generate Exception Handling Middleware
-        var middlewarePath = Path.Combine(config.OutputPath, "Api", "Middleware");
+        var middlewarePath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api", "Middleware");
         var exceptionMiddleware = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateExceptionMiddleware(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(middlewarePath, "ExceptionHandlingMiddleware.cs"), exceptionMiddleware);
         _logger.LogInformation("Generated Exception Handling Middleware");
         
         // Generate CORS Configuration
-        var configPath = Path.Combine(config.OutputPath, "Api", "Configuration");
+        var configPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api", "Configuration");
         var corsConfig = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateCorsConfiguration(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(configPath, "CorsConfiguration.cs"), corsConfig);
         _logger.LogInformation("Generated CORS Configuration");
@@ -617,7 +623,7 @@ public class CodeGenController : ControllerBase
         
         // Generate appsettings.json
         var appSettings = MyCodeGent.Templates.InfrastructureConfigTemplate.GenerateAppSettingsJson(config.RootNamespace, config.DatabaseProvider);
-        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, "Api", "appsettings.json"), appSettings);
+        await _fileWriter.WriteFileAsync(Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api", "appsettings.json"), appSettings);
         _logger.LogInformation("Generated appsettings.json");
         
         // Generate Swagger Configuration
@@ -626,7 +632,7 @@ public class CodeGenController : ControllerBase
         _logger.LogInformation("Generated Swagger Configuration");
         
         // Generate Pagination Models
-        var modelsPath = Path.Combine(config.OutputPath, "Application", "Common", "Models");
+        var modelsPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", "Common", "Models");
         var pagedResultCode = MyCodeGent.Templates.PaginationTemplate.GeneratePagedResult(config.RootNamespace);
         await _fileWriter.WriteFileAsync(Path.Combine(modelsPath, "PagedResult.cs"), pagedResultCode);
         
@@ -645,21 +651,21 @@ public class CodeGenController : ControllerBase
         await _fileWriter.WriteFileAsync(Path.Combine(interfacePath, "IFileStorageService.cs"), fileStorageInterface);
         
         var fileStorageService = MyCodeGent.Templates.FileUploadTemplate.GenerateLocalFileStorageService(config.RootNamespace);
-        var servicesPath = Path.Combine(config.OutputPath, "Infrastructure", "Services");
+        var servicesPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", "Services");
         await _fileWriter.WriteFileAsync(Path.Combine(servicesPath, "LocalFileStorageService.cs"), fileStorageService);
         
         var filesController = MyCodeGent.Templates.FileUploadTemplate.GenerateFileUploadController(config.RootNamespace);
-        var controllersPath = Path.Combine(config.OutputPath, "Api", "Controllers");
+        var controllersPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api", "Controllers");
         await _fileWriter.WriteFileAsync(Path.Combine(controllersPath, "FilesController.cs"), filesController);
         _logger.LogInformation("Generated File Upload Service");
         
         // Generate Audit Logging
         var auditEntity = MyCodeGent.Templates.AuditTemplate.GenerateAuditLogEntity(config.RootNamespace);
-        var domainPath = Path.Combine(config.OutputPath, "Domain", "Entities");
+        var domainPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Domain", "Entities");
         await _fileWriter.WriteFileAsync(Path.Combine(domainPath, "AuditLog.cs"), auditEntity);
         
         var auditConfig = MyCodeGent.Templates.AuditTemplate.GenerateAuditLogConfiguration(config.RootNamespace);
-        var configurationsPath = Path.Combine(config.OutputPath, "Infrastructure", "Persistence", "Configurations");
+        var configurationsPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", "Persistence", "Configurations");
         await _fileWriter.WriteFileAsync(Path.Combine(configurationsPath, "AuditLogConfiguration.cs"), auditConfig);
         
         var auditService = MyCodeGent.Templates.AuditTemplate.GenerateAuditService(config.RootNamespace);

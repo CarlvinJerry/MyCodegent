@@ -12,6 +12,7 @@ public static class InfrastructureTemplate
         sb.AppendLine("using Microsoft.EntityFrameworkCore;");
         sb.AppendLine($"using {rootNamespace}.Domain.Entities;");
         sb.AppendLine($"using {rootNamespace}.Application.Common.Interfaces;");
+        sb.AppendLine($"using {rootNamespace}.Infrastructure.Persistence.Configurations;");
         sb.AppendLine();
         sb.AppendLine($"namespace {rootNamespace}.Infrastructure.Persistence;");
         sb.AppendLine();
@@ -29,6 +30,10 @@ public static class InfrastructureTemplate
         }
         
         sb.AppendLine();
+        sb.AppendLine("    // Audit Logging");
+        sb.AppendLine("    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();");
+        
+        sb.AppendLine();
         sb.AppendLine("    protected override void OnModelCreating(ModelBuilder modelBuilder)");
         sb.AppendLine("    {");
         sb.AppendLine("        base.OnModelCreating(modelBuilder);");
@@ -38,6 +43,10 @@ public static class InfrastructureTemplate
         {
             sb.AppendLine($"        modelBuilder.ApplyConfiguration(new {entity.Name}Configuration());");
         }
+        
+        sb.AppendLine();
+        sb.AppendLine("        // Apply Audit Log configuration");
+        sb.AppendLine("        modelBuilder.ApplyConfiguration(new AuditLogConfiguration());");
         
         sb.AppendLine();
         sb.AppendLine("        // Seed initial data");
@@ -195,6 +204,11 @@ public static class InfrastructureTemplate
         {
             sb.AppendLine($"    DbSet<{entity.Name}> {entity.Name}s {{ get; }}");
         }
+        
+        // Add AuditLog DbSet
+        sb.AppendLine();
+        sb.AppendLine("    // Audit Logging");
+        sb.AppendLine("    DbSet<AuditLog> AuditLogs { get; }");
         
         sb.AppendLine();
         sb.AppendLine("    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);");

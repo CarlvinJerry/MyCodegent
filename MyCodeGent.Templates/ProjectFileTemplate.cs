@@ -164,7 +164,7 @@ public static class ProjectFileTemplate
         
         if (config.UseAutoMapper)
         {
-            sb.AppendLine("    <PackageReference Include=\"AutoMapper\" Version=\"13.0.1\" />");
+            sb.AppendLine("    <PackageReference Include=\"AutoMapper\" Version=\"12.0.1\" />");
         }
         
         sb.AppendLine("    <PackageReference Include=\"Microsoft.EntityFrameworkCore\" Version=\"9.0.0\" />");
@@ -213,6 +213,7 @@ public static class ProjectFileTemplate
         }
         
         sb.AppendLine("    <PackageReference Include=\"Microsoft.EntityFrameworkCore\" Version=\"9.0.0\" />");
+        sb.AppendLine("    <PackageReference Include=\"Microsoft.Extensions.Diagnostics.HealthChecks\" Version=\"9.0.0\" />");
         sb.AppendLine("  </ItemGroup>");
         sb.AppendLine();
         sb.AppendLine("  <ItemGroup>");

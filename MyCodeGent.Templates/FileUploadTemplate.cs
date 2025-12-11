@@ -8,16 +8,41 @@ public static class FileUploadTemplate
     {
         var sb = new StringBuilder();
         
-        sb.AppendLine("using Microsoft.AspNetCore.Http;");
-        sb.AppendLine();
         sb.AppendLine($"namespace {rootNamespace}.Application.Common.Interfaces;");
         sb.AppendLine();
+        sb.AppendLine("/// <summary>");
+        sb.AppendLine("/// File storage service interface - framework agnostic");
+        sb.AppendLine("/// </summary>");
         sb.AppendLine("public interface IFileStorageService");
         sb.AppendLine("{");
-        sb.AppendLine("    Task<string> UploadFileAsync(IFormFile file, string folder, CancellationToken cancellationToken = default);");
+        sb.AppendLine("    /// <summary>");
+        sb.AppendLine("    /// Uploads a file from a stream");
+        sb.AppendLine("    /// </summary>");
+        sb.AppendLine("    /// <param name=\"stream\">File stream</param>");
+        sb.AppendLine("    /// <param name=\"fileName\">File name with extension</param>");
+        sb.AppendLine("    /// <param name=\"folder\">Destination folder</param>");
+        sb.AppendLine("    /// <param name=\"cancellationToken\">Cancellation token</param>");
+        sb.AppendLine("    /// <returns>File path or URL</returns>");
+        sb.AppendLine("    Task<string> UploadFileAsync(Stream stream, string fileName, string folder, CancellationToken cancellationToken = default);");
+        sb.AppendLine();
+        sb.AppendLine("    /// <summary>");
+        sb.AppendLine("    /// Downloads a file as byte array");
+        sb.AppendLine("    /// </summary>");
         sb.AppendLine("    Task<byte[]> DownloadFileAsync(string filePath, CancellationToken cancellationToken = default);");
+        sb.AppendLine();
+        sb.AppendLine("    /// <summary>");
+        sb.AppendLine("    /// Deletes a file");
+        sb.AppendLine("    /// </summary>");
         sb.AppendLine("    Task<bool> DeleteFileAsync(string filePath, CancellationToken cancellationToken = default);");
+        sb.AppendLine();
+        sb.AppendLine("    /// <summary>");
+        sb.AppendLine("    /// Checks if file exists");
+        sb.AppendLine("    /// </summary>");
         sb.AppendLine("    Task<bool> FileExistsAsync(string filePath, CancellationToken cancellationToken = default);");
+        sb.AppendLine();
+        sb.AppendLine("    /// <summary>");
+        sb.AppendLine("    /// Gets the public URL for a file");
+        sb.AppendLine("    /// </summary>");
         sb.AppendLine("    string GetFileUrl(string filePath);");
         sb.AppendLine("}");
         
@@ -28,7 +53,6 @@ public static class FileUploadTemplate
     {
         var sb = new StringBuilder();
         
-        sb.AppendLine("using Microsoft.AspNetCore.Http;");
         sb.AppendLine("using Microsoft.Extensions.Configuration;");
         sb.AppendLine($"using {rootNamespace}.Application.Common.Interfaces;");
         sb.AppendLine();
@@ -54,10 +78,13 @@ public static class FileUploadTemplate
         sb.AppendLine("        }");
         sb.AppendLine("    }");
         sb.AppendLine();
-        sb.AppendLine("    public async Task<string> UploadFileAsync(IFormFile file, string folder, CancellationToken cancellationToken = default)");
+        sb.AppendLine("    public async Task<string> UploadFileAsync(Stream stream, string fileName, string folder, CancellationToken cancellationToken = default)");
         sb.AppendLine("    {");
-        sb.AppendLine("        if (file == null || file.Length == 0)");
-        sb.AppendLine("            throw new ArgumentException(\"File is empty\", nameof(file));");
+        sb.AppendLine("        if (stream == null || stream.Length == 0)");
+        sb.AppendLine("            throw new ArgumentException(\"Stream is empty\", nameof(stream));");
+        sb.AppendLine();
+        sb.AppendLine("        if (string.IsNullOrWhiteSpace(fileName))");
+        sb.AppendLine("            throw new ArgumentException(\"File name is required\", nameof(fileName));");
         sb.AppendLine();
         sb.AppendLine("        // Create folder if it doesn't exist");
         sb.AppendLine("        var folderPath = Path.Combine(_uploadPath, folder);");
@@ -67,15 +94,15 @@ public static class FileUploadTemplate
         sb.AppendLine("        }");
         sb.AppendLine();
         sb.AppendLine("        // Generate unique filename");
-        sb.AppendLine("        var extension = Path.GetExtension(file.FileName);");
-        sb.AppendLine("        var fileName = $\"{Guid.NewGuid()}{extension}\";");
-        sb.AppendLine("        var filePath = Path.Combine(folder, fileName);");
+        sb.AppendLine("        var extension = Path.GetExtension(fileName);");
+        sb.AppendLine("        var uniqueFileName = $\"{Guid.NewGuid()}{extension}\";");
+        sb.AppendLine("        var filePath = Path.Combine(folder, uniqueFileName);");
         sb.AppendLine("        var fullPath = Path.Combine(_uploadPath, filePath);");
         sb.AppendLine();
         sb.AppendLine("        // Save file");
-        sb.AppendLine("        using (var stream = new FileStream(fullPath, FileMode.Create))");
+        sb.AppendLine("        using (var fileStream = new FileStream(fullPath, FileMode.Create))");
         sb.AppendLine("        {");
-        sb.AppendLine("            await file.CopyToAsync(stream, cancellationToken);");
+        sb.AppendLine("            await stream.CopyToAsync(fileStream, cancellationToken);");
         sb.AppendLine("        }");
         sb.AppendLine();
         sb.AppendLine("        return filePath.Replace(\"\\\\\", \"/\");");
@@ -170,7 +197,13 @@ public static class FileUploadTemplate
         sb.AppendLine("            if (!allowedExtensions.Contains(extension))");
         sb.AppendLine("                return BadRequest(new { error = $\"File type {extension} is not allowed\" });");
         sb.AppendLine();
-        sb.AppendLine("            var filePath = await _fileStorage.UploadFileAsync(file, folder);");
+        sb.AppendLine("            // Convert IFormFile to Stream and upload");
+        sb.AppendLine("            string filePath;");
+        sb.AppendLine("            using (var stream = file.OpenReadStream())");
+        sb.AppendLine("            {");
+        sb.AppendLine("                filePath = await _fileStorage.UploadFileAsync(stream, file.FileName, folder);");
+        sb.AppendLine("            }");
+        sb.AppendLine();
         sb.AppendLine("            var fileUrl = _fileStorage.GetFileUrl(filePath);");
         sb.AppendLine();
         sb.AppendLine("            _logger.LogInformation(\"File uploaded: {FileName} -> {FilePath}\", file.FileName, filePath);");

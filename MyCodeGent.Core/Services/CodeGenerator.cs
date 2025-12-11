@@ -46,7 +46,7 @@ public class CodeGenerator : ICodeGenerator
     
     private async Task GenerateDomainAsync(EntityModel entity, GenerationConfig config)
     {
-        var domainPath = Path.Combine(config.OutputPath, "Domain", "Entities");
+        var domainPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Domain", "Entities");
         await _fileWriter.CreateDirectoryAsync(domainPath);
         
         var entityCode = EntityTemplate.Generate(entity);
@@ -58,7 +58,7 @@ public class CodeGenerator : ICodeGenerator
     
     private async Task GenerateApplicationAsync(EntityModel entity, GenerationConfig config)
     {
-        var appPath = Path.Combine(config.OutputPath, "Application", $"{entity.Name}s");
+        var appPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", $"{entity.Name}s");
         
         // Generate DTO
         var dtoCode = DtoTemplate.Generate(entity);
@@ -69,7 +69,7 @@ public class CodeGenerator : ICodeGenerator
         // Generate AutoMapper Profile
         if (config.UseAutoMapper)
         {
-            var mappingPath = Path.Combine(config.OutputPath, "Application", "Mappings");
+            var mappingPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", "Mappings");
             var mappingProfile = MappingProfileTemplate.Generate(entity);
             await _fileWriter.WriteFileAsync(Path.Combine(mappingPath, $"{entity.Name}MappingProfile.cs"), mappingProfile);
             Console.WriteLine($"  ✓ Generated AutoMapper Profile: {entity.Name}MappingProfile.cs");
@@ -162,7 +162,7 @@ public class CodeGenerator : ICodeGenerator
     
     private async Task GenerateInfrastructureAsync(EntityModel entity, GenerationConfig config)
     {
-        var infraPath = Path.Combine(config.OutputPath, "Infrastructure", "Persistence", "Configurations");
+        var infraPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", "Persistence", "Configurations");
         await _fileWriter.CreateDirectoryAsync(infraPath);
         
         var configCode = InfrastructureTemplate.GenerateEntityConfiguration(entity);
@@ -174,7 +174,7 @@ public class CodeGenerator : ICodeGenerator
     
     private async Task GenerateApiAsync(EntityModel entity, GenerationConfig config)
     {
-        var apiPath = Path.Combine(config.OutputPath, "Api", "Controllers");
+        var apiPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Api", "Controllers");
         await _fileWriter.CreateDirectoryAsync(apiPath);
         
         var controllerCode = ControllerTemplate.Generate(entity);
@@ -209,6 +209,9 @@ public class CodeGenerator : ICodeGenerator
     public async Task GenerateApplicationInfrastructureAsync(List<EntityModel> entities, GenerationConfig config)
     {
         Console.WriteLine("Generating application infrastructure...");
+        
+        // Generate common/shared files first
+        await GenerateCommonFilesAsync(entities, config);
         
         // Generate Program.cs
         if (config.GenerateProgramFile)
@@ -293,6 +296,34 @@ public class CodeGenerator : ICodeGenerator
         }
         
         Console.WriteLine("✓ Application infrastructure generation completed");
+    }
+    
+    /// <summary>
+    /// Generates common/shared files needed by all entities (DbContext, interfaces, models)
+    /// </summary>
+    private async Task GenerateCommonFilesAsync(List<EntityModel> entities, GenerationConfig config)
+    {
+        Console.WriteLine("Generating common/shared files...");
+        
+        // Generate IApplicationDbContext interface
+        var interfacePath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", "Common", "Interfaces");
+        var interfaceCode = InfrastructureTemplate.GenerateApplicationDbContextInterface(entities, config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(interfacePath, "IApplicationDbContext.cs"), interfaceCode);
+        Console.WriteLine("  ✓ Generated IApplicationDbContext.cs");
+        
+        // Generate ApplicationDbContext
+        var dbContextPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Infrastructure", "Persistence");
+        var dbContextCode = InfrastructureTemplate.GenerateDbContext(entities, config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(dbContextPath, "ApplicationDbContext.cs"), dbContextCode);
+        Console.WriteLine("  ✓ Generated ApplicationDbContext.cs");
+        
+        // Generate PagedResult model
+        var modelsPath = Path.Combine(config.OutputPath, $"{config.RootNamespace}.Application", "Common", "Models");
+        var pagedResultCode = InfrastructureTemplate.GeneratePagedResult(config.RootNamespace);
+        await _fileWriter.WriteFileAsync(Path.Combine(modelsPath, "PagedResult.cs"), pagedResultCode);
+        Console.WriteLine("  ✓ Generated PagedResult.cs");
+        
+        Console.WriteLine("✓ Common files generation completed");
     }
     
     private string GenerateGitIgnore()

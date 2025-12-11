@@ -13,6 +13,7 @@ public static class ProgramTemplate
         sb.AppendLine("using Microsoft.EntityFrameworkCore;");
         sb.AppendLine($"using {config.RootNamespace}.Application.Common.Interfaces;");
         sb.AppendLine($"using {config.RootNamespace}.Infrastructure.Persistence;");
+        sb.AppendLine($"using {config.RootNamespace}.Application.Common.Models;");
         
         if (config.UseMediator)
         {

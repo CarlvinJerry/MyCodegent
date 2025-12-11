@@ -10,6 +10,7 @@ public static class InfrastructureConfigTemplate
         var sb = new StringBuilder();
         
         sb.AppendLine("using Microsoft.Extensions.Diagnostics.HealthChecks;");
+        sb.AppendLine($"using {rootNamespace}.Application.Common.Interfaces;");
         sb.AppendLine();
         sb.AppendLine($"namespace {rootNamespace}.Infrastructure.HealthChecks;");
         sb.AppendLine();

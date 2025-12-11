@@ -215,8 +215,8 @@ public static class TestTemplate
         sb.AppendLine("  </ItemGroup>");
         sb.AppendLine();
         sb.AppendLine("  <ItemGroup>");
-        sb.AppendLine($"    <ProjectReference Include=\"..\\Application\\{rootNamespace}.Application.csproj\" />");
-        sb.AppendLine($"    <ProjectReference Include=\"..\\Domain\\{rootNamespace}.Domain.csproj\" />");
+        sb.AppendLine($"    <ProjectReference Include=\"..\\..\\{rootNamespace}.Application\\{rootNamespace}.Application.csproj\" />");
+        sb.AppendLine($"    <ProjectReference Include=\"..\\..\\{rootNamespace}.Domain\\{rootNamespace}.Domain.csproj\" />");
         sb.AppendLine("  </ItemGroup>");
         sb.AppendLine();
         sb.AppendLine("</Project>");

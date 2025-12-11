@@ -27,28 +27,28 @@ public static class SolutionTemplate
         var srcFolderGuid = Guid.NewGuid().ToString().ToUpper();
         var testsFolderGuid = Guid.NewGuid().ToString().ToUpper();
         
-        // Add projects (matching actual flat folder structure)
+        // Add projects (matching where .csproj files are actually generated)
         if (config.GenerateDomain)
         {
-            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Domain\", \"Domain\\{config.RootNamespace}.Domain.csproj\", \"{{{domainGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Domain\", \"{config.RootNamespace}.Domain\\{config.RootNamespace}.Domain.csproj\", \"{{{domainGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
         if (config.GenerateApplication)
         {
-            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Application\", \"Application\\{config.RootNamespace}.Application.csproj\", \"{{{applicationGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Application\", \"{config.RootNamespace}.Application\\{config.RootNamespace}.Application.csproj\", \"{{{applicationGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
         if (config.GenerateInfrastructure)
         {
-            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Infrastructure\", \"Infrastructure\\{config.RootNamespace}.Infrastructure.csproj\", \"{{{infrastructureGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Infrastructure\", \"{config.RootNamespace}.Infrastructure\\{config.RootNamespace}.Infrastructure.csproj\", \"{{{infrastructureGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
         if (config.GenerateApi)
         {
-            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Api\", \"Api\\{config.RootNamespace}.Api.csproj\", \"{{{apiGuid}}}\"");
+            sb.AppendLine($"Project(\"{{9A19103F-16F7-4668-BE54-9A1E7A4F7556}}\") = \"{config.RootNamespace}.Api\", \"{config.RootNamespace}.Api\\{config.RootNamespace}.Api.csproj\", \"{{{apiGuid}}}\"");
             sb.AppendLine("EndProject");
         }
         
